@@ -20,7 +20,6 @@
 
 {% block content %}
 
-
     {% if space.is_open %}
         <h2 class="mb-4">Voting in space {{ space.slug }}</h2>
 
@@ -101,8 +100,6 @@
                         {% endfor %}
                     </table>
 
-
-
                 {% else %}
                     There are no tickets remaining to be pointed.
                 {% endif %}
@@ -132,10 +129,26 @@
         </div>
 
 
-
-
     {% else %}
         {{ space.slug }} is not currently open for voting.
+    {% endif %}
+
+    {% if user == space.moderator %}
+        <h3>Moderator Tools</h3>
+        <h4>Open/Close Space</h4>
+        <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-small btn-primary mt-2">
+            {% if space.is_open %}Close{% else %}Open{% endif %} Space
+        </a>
+
+        <h4 class="mt-4">Boot Users</h4>
+        <form action="{% url 'points:boot_users' space.slug %}" method="get">
+            {% for username in space.members.all %}
+                <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+            {% endfor %}
+            <input class="btn btn-block btn-primary mb-2" type="submit" value="Boot"/>
+        </form>
+
+
     {% endif %}
 
 {% endblock %}

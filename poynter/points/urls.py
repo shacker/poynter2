@@ -16,5 +16,7 @@ urlpatterns = [
     path(
         "activate_ticket/<str:slug>/<int:ticket_id>", views.activate_ticket, name="activate_ticket"
     ),
+    path("open_close_space/<str:slug>", views.open_close_space, name="open_close_space"),
+    path("boot_users/<str:slug>", views.boot_users, name="boot_users"),
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
 ]

@@ -1,5 +1,6 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render, reverse
-
+from django.contrib.auth.models import User
 from poynter.points.models import Project, Space, Ticket
 
 
@@ -43,7 +44,7 @@ def join_leave_space(request, slug: str):
     return redirect(reverse("points:space", kwargs={"slug": space.slug}))
 
 
-def open_close_ticket(request, slug: str, ticket_id):
+def open_close_ticket(request, slug: str, ticket_id: int):
     "Allow moderator to open or close a ticket in a space. Simple toggle."
 
     space = get_object_or_404(Space, slug=slug)
@@ -54,7 +55,7 @@ def open_close_ticket(request, slug: str, ticket_id):
     return redirect(reverse("points:space", kwargs={"slug": space.slug}))
 
 
-def activate_ticket(request, slug: str, ticket_id):
+def activate_ticket(request, slug: str, ticket_id: int):
     """Allow moderator to make a ticket active or inactive in a space. Simple toggle.
     Must set other active tickets to null first.
     """
@@ -64,5 +65,27 @@ def activate_ticket(request, slug: str, ticket_id):
     space.ticket_set.all().update(active=None)
     ticket.active = not ticket.active
     ticket.save()
+
+    return redirect(reverse("points:space", kwargs={"slug": space.slug}))
+
+
+def open_close_space(request, slug: str):
+    "Allow moderator to open or close a space for voting. Simple toggle."
+
+    space = get_object_or_404(Space, slug=slug)
+    space.is_open = False if space.is_open else True
+    space.save()
+
+    return redirect(reverse("points:space", kwargs={"slug": space.slug}))
+
+
+def boot_users(request, slug: str):
+    "Allow moderator to remove users from a space."
+
+    space = get_object_or_404(Space, slug=slug)
+    usernames = request.GET.getlist("usernames")
+    for username in usernames:
+        user = User.objects.get(username=username)
+        space.members.remove(user)
 
     return redirect(reverse("points:space", kwargs={"slug": space.slug}))
