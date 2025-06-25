@@ -1,7 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render, reverse
-from django.utils.timezone import datetime
 
-from poynter.points.forms import VoteForm
 from poynter.points.models import Project, Space, Ticket, Vote
 
 

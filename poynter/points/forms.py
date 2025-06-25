@@ -10,9 +10,7 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        # Not sure about this linter hint
-        # fields = "__all__"
-        fields = "fields"
+        fields = ["url", "title", "space", "active"]
 
     def clean(self):
         cleaned_data = super().clean()
