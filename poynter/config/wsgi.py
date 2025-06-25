@@ -11,7 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "proj_1.config.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "poynter.config.settings")
 
 application = get_wsgi_application()
 

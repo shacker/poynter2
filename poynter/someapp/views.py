@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render, reverse
 
-from proj_1.someapp.models import Dummy
+from poynter.someapp.models import Dummy
 
 
 def home(request):

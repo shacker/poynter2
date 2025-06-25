@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
-from proj_1.someapp.views import home, send_user_mail
+from poynter.someapp.views import home, send_user_mail
 
 urlpatterns = [
     path("", home, name="home"),

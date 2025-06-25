@@ -49,8 +49,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "proj_1.core",
-    "proj_1.someapp",
+    "poynter.core",
+    "poynter.someapp",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = "proj_1.config.urls"
+ROOT_URLCONF = "poynter.config.urls"
 
 TEMPLATES = [
     {
@@ -93,7 +93,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-WSGI_APPLICATION = "proj_1.config.wsgi.application"
+WSGI_APPLICATION = "poynter.config.wsgi.application"
 
 
 # Healthchecks

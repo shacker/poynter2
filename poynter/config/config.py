@@ -37,7 +37,7 @@ class AppConfig(GoodConf):
     )
     REDIS_ENABLED: bool = Field(default=False, description="If False, db caching will be used.")
     REDIS_URL: str = Field(default="redis://127.0.0.1:6379")
-    REDIS_PREFIX: str = Field(default="proj_1")
+    REDIS_PREFIX: str = Field(default="poynter")
     SECRET_KEY: str = Field(
         default_factory=lambda: base64.b64encode(os.urandom(60)).decode(),
         description="Used for cryptographic signing. "
@@ -47,7 +47,7 @@ class AppConfig(GoodConf):
     TEST_EMAIL_TO: str = Field(default="")
 
     class Config:
-        default_files: List[str] = ["proj_1/config/local.yml", "proj_1/config/local.json"]
+        default_files: List[str] = ["poynter/config/local.yml", "poynter/config/local.json"]
 
 
 config: AppConfig = AppConfig()
@@ -55,7 +55,7 @@ config: AppConfig = AppConfig()
 
 def manage_py() -> None:
     """Entrypoint for manage.py"""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "proj_1.config.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "poynter.config.settings")
     config.django_manage()
 
 

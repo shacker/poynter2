@@ -13,7 +13,7 @@ See the [ES AppPack documentation](https://energy-solution.atlassian.net/wiki/sp
 
 ### Plumbing check:
 
-![Plumbing screenshot](proj_1/static/img/plumbing.jpg?raw=true "Plumbing screenshot")
+![Plumbing screenshot](poynter/static/img/plumbing.jpg?raw=true "Plumbing screenshot")
 
 ## Localhost installation
 
@@ -47,8 +47,8 @@ Lincoln Loop's [goodconf](https://github.com/lincolnloop/goodconf), which is bot
 [12-Factor](https://12factor.net)-compliant and can be used to "hoist" environment variables into
 Django project settings.
 
-To generate a local .yml file storing your local secrets, copy `proj_1/config/local.example.yml`
-to `proj_1/config/local.yml` and edit its vars `local.yml` to match your system.
+To generate a local .yml file storing your local secrets, copy `poynter/config/local.example.yml`
+to `poynter/config/local.yml` and edit its vars `local.yml` to match your system.
 You can give this file a different name once you've got things up and running, then modify the
 reference to it in `config.py`.
 
