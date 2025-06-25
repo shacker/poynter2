@@ -1,6 +1,7 @@
 from django.contrib import admin
+
 from .forms import TicketForm
-from .models import Space, Ticket, Vote, Project
+from .models import Project, Space, Ticket, Vote
 
 
 class VoteAdmin(admin.ModelAdmin):
@@ -14,6 +15,7 @@ class TicketAdmin(admin.ModelAdmin):
 
 class SpaceAdmin(admin.ModelAdmin):
     list_display = ("project", "moderator", "is_open")
+    filter_horizontal = ("members",)
 
 
 admin.site.register(Vote, VoteAdmin)

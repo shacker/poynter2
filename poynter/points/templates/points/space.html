@@ -80,17 +80,21 @@
 
 
             <div class="col-2">
-                <h4>Participating</h4>
+                <h4>Members</h4>
 
                 <div class="card" style="width: 18rem;">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">shacker</li>
-                    <li class="list-group-item">rob</li>
-                    <li class="list-group-item">emullaney</li>
-                </ul>
-
+                    <ul class="list-group list-group-flush">
+                        {% for member in space.members.all  %}
+                            <li class="list-group-item">{{ member.username }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                    should get checkmarks in real time as votes come in
+
+                <a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-small btn-primary mt-2">
+                    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
+                </a>
+
+                <p>should get checkmarks in real time as votes come in</p>
             </div>
         </div>
         </div>

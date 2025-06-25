@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.timezone import datetime
 
 from poynter.points.forms import VoteForm
@@ -27,6 +27,18 @@ def space(request, slug: str):
         "points/space.html",
         {"space": space, "active_ticket": active_ticket, "numbers": numbers},
     )
+
+
+def join_leave_space(request, slug: str):
+    "Allow member to join or leave a space. Simple toggle."
+
+    space = get_object_or_404(Space, slug=slug)
+    if request.user in space.members.all():
+        space.members.remove(request.user)
+    else:
+        space.members.add(request.user)
+
+    return redirect(reverse("points:space", kwargs={"slug": space.slug}))
 
 
 def about(request):

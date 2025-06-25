@@ -1,8 +1,8 @@
 import requests
 from django.conf import settings
 from django.db import models
-from django_extensions.db.models import TimeStampedModel
 from django_extensions.db.fields import AutoSlugField
+from django_extensions.db.models import TimeStampedModel
 
 
 class Project(TimeStampedModel):
@@ -39,6 +39,11 @@ class Space(TimeStampedModel):
     moderator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slug = AutoSlugField(populate_from=["project", "moderator"])
     is_open = models.BooleanField(help_text="Voting is currently open", default=False)
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        help_text="Users who have joined this space.",
+        related_name="members",
+    )
 
     def __str__(self):
         return f"{self.moderator.username}: {self.project}"
@@ -80,7 +85,7 @@ class Ticket(TimeStampedModel):
         If we can't get to the remote system, we can still enter the title manually."""
 
         if not self.title:
-            page = requests.get(self.url)
+            page = requests.get(self.url, timeout=15)
             text = page.text
             self.title = text[text.find("<title>") + 7 : text.find("</title>")]
         return super(Ticket, self).save(*args, **kwargs)

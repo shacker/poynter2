@@ -10,5 +10,6 @@ urlpatterns = [
     path("votes/", views.votes, name="votes"),
     path("vote/", views.vote, name="vote"),
     path("space/<str:slug>", views.space, name="space"),
+    path("join_leave_space/<str:slug>", views.join_leave_space, name="join_leave_space"),
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
 ]
