@@ -10,19 +10,22 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     <title>{% block title %}Project{% endblock title %}</title>
    </head>
-   <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <header class="site-header">
      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
       <div class="container">
-         <a class="navbar-brand mr-4" href="{% url 'home' %}">Dummy Site</a>
+         <a class="navbar-brand mr-4" href="{% url 'points_home' %}">Dummy Site</a>
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
          </button>
          <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
-           <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
            <a class="nav-item nav-link" href="{% url 'alive_alive' %}">Alive Check</a>
            <a class="nav-item nav-link" href="{% url 'alive_health' %}">Health Check</a>
+            <a class="nav-link" href="{% url 'points:vote' %}">Vote</a>
+            <a class="nav-link" href="{% url 'points:votes' %}">Votes</a>
+            <a class="nav-link" href="{% url 'points:about' %}">About</a>
+
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">

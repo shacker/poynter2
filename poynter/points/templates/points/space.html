@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Space {{ space.slug }}<{% endblock %}
+
+{% block extra_style %}
+  <style>
+    .points-buttons button.btn  {
+        font-size: 200%;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+    .badge {
+        font-size: 200%;
+    }
+    .borderless td, .borderless th {
+        border: none;
+    }
+  </style>
+{% endblock extra_style %}
+
+{% block content %}
+
+
+    {% if space.is_open %}
+        <h2 class="mb-4">Voting in space {{ space.slug }}</h2>
+
+        <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <h3>Current ticket:</h3>
+                <a href="{{ ticket.url }}" target="_blank">{{ active_ticket }}</a>
+
+                <table class="table borderless mt-4 mb-4">
+                    <form action="{% url 'points:tally_single' %}" method="post">
+                        <input type="hidden" name="space" value="{{ space.slug }}">
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                        <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
+
+                        {% for number in numbers %}
+                            {# Janky. Better way to iterate a list of buttons AND row break after every third one? #}
+                            {% if forloop.counter0 == 0 or forloop.counter0 == 3 %}<tr>{% endif %}
+                                <td>
+                                    <button type="button" class="btn btn-primary"
+                                            name="number" value="{{ number.0 }}"
+                                            hx-post="{% url 'points:tally_single' %}"
+                                            hx-include="form"
+                                            hx-swap="none"
+                                        >
+                                        {{ number.1 }} <span class="badge badge-light">{{ number.0 }}</span>
+                                    </button>
+                                </td>
+                            {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}</tr>{% endif %}
+                        {% endfor %}
+                    </form>
+                </table>
+
+                <hr />
+
+                <h3 class="mt-4">Remaining tickets for today</h3>
+                <ul>
+                    {% for ticket in space.ticket_set.all %}
+                        <li>
+                            <a href="{{ ticket.url }}" target="_blank">{{ ticket }}</a>
+                            {% if ticket.active %}VOTE{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+            <div class="col-2">
+                <h4>Participating</h4>
+
+                <div class="card" style="width: 18rem;">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">shacker</li>
+                    <li class="list-group-item">rob</li>
+                    <li class="list-group-item">emullaney</li>
+                </ul>
+
+                </div>
+                    should get checkmarks in real time as votes come in
+            </div>
+        </div>
+        </div>
+
+
+
+
+    {% else %}
+        {{ space.slug }} is not currently open for voting.
+    {% endif %}
+
+{% endblock %}

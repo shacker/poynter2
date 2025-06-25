@@ -4,11 +4,11 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
-from poynter.someapp.views import home, send_user_mail
+from poynter.points.views import home as points_home
 
 urlpatterns = [
-    path("", home, name="home"),
-    path("send_email", send_user_mail, name="send_user_mail"),
+    path("", points_home, name="points_home"),
+    path("points/", include("poynter.points.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("-/", include("django_alive.urls")),
