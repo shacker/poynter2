@@ -187,7 +187,7 @@ else:
     MEDIA_URL = "/media/"
 
 
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "points_home"
 LOGOUT_REDIRECT_URL = "account_login"
 
 

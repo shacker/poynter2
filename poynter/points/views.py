@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from poynter.points.models import Project, Space, Ticket, Vote
+from poynter.points.models import Project, Space, Ticket
 
 
 def home(request):
@@ -41,9 +41,3 @@ def join_leave_space(request, slug: str):
         space.members.add(request.user)
 
     return redirect(reverse("points:space", kwargs={"slug": space.slug}))
-
-
-def votes(request):
-    "Filtered list of votes"
-    votes = Vote.objects.all()
-    return render(request, "points/votes.html", {"votes": votes})

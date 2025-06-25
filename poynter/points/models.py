@@ -17,16 +17,6 @@ class Project(TimeStampedModel):
         return f"{self.name}"
 
 
-class Vote(TimeStampedModel):
-    """One user's vote on one ticket."""
-
-    voter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    vote = models.SmallIntegerField(help_text="Numerical vote up to 2 digits")
-
-    def __str__(self):
-        return f"'{self.voter}' on {self.created.strftime('%A, %d %B, %Y at %X')}"
-
-
 class Space(TimeStampedModel):
     """A space is a meeting locations owned by a combination of one moderator in one project.
     A permanent URL goes with each space. Results of voting sessions are captured as JSON documents
