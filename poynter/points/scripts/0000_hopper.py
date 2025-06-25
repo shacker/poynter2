@@ -1,8 +1,10 @@
 import logging
-from poynter.points.models import Project, Ticket, Space
+
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from faker import Faker
+
+from poynter.points.models import Project, Space, Ticket
 
 log = logging.getLogger(__name__)
 
