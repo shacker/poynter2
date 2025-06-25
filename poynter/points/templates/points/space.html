@@ -29,7 +29,7 @@
             <div class="col">
 
                 <h3>Current ticket:</h3>
-                {% if active_ticket %}
+                {% if active_ticket and not active_ticket.voted %}
                     <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket }}</a>
 
 
@@ -64,18 +64,50 @@
                 <hr />
 
                 {% if space.ticket_set.all %}
-                    <h3 class="mt-4">Remaining tickets for today</h3>
-                    <ul>
+                    <h3 class="mt-4">Tickets for today</h3>
+                    <table class="table">
+                        <tr>
+                            <th>Title</th>
+                            <th>Active</th>
+                            <th>Voted</th>
+                            {% if user == space.moderator %}
+                                <th>Open/Close</th>
+                                <th>Activate</th>
+                            {% endif %}
+                        </tr>
                         {% for ticket in space.ticket_set.all %}
-                            <li>
-                                <a href="{{ ticket.url }}" target="_blank">{{ ticket }}</a>
-                                {% if ticket.active %}VOTE{% endif %}
-                            </li>
+                            <tr>
+                                <td>
+                                    <a href="{{ ticket.url }}" target="_blank">
+                                        {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
+                                    </a>
+                                </td>
+                                <td>{% if ticket.active %}<i class="bi bi-radioactive"></i>{% endif %}</td>
+                                <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
+                                {% if user == space.moderator %}
+                                    <td>
+                                        <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" class="btn btn-small btn-primary mt-2">
+                                            <i class="bi bi-app-indicator"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" class="btn btn-small btn-primary mt-2">
+                                            <i class="bi bi-battery-charging"></i>
+                                        </a>
+                                    </td>
+                                {% endif %}
+
+                            </tr>
                         {% endfor %}
-                    </ul>
+                    </table>
+
+
+
                 {% else %}
                     There are no tickets remaining to be pointed.
                 {% endif %}
+
+
             </div>
 
 

@@ -18,11 +18,8 @@ class Project(TimeStampedModel):
 
 
 class Space(TimeStampedModel):
-    """A space is a meeting locations owned by a combination of one moderator in one project.
-    A permanent URL goes with each space. Results of voting sessions are captured as JSON documents
-    for posterity.
-    A PointingSession has a moderator and a collection of tickets.
-    TODO: Allow NOW or arbitrary date
+    """A space is a meeting location for one moderator in one project.
+    Each Space has a permanent URL. Results of voting sessions are captured as JSON documents.
     """
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -48,7 +45,8 @@ class Space(TimeStampedModel):
 
 
 class Ticket(TimeStampedModel):
-    """A ticket reference (e.g. to Jira), to be stored in a PointingSession and voted upon by users."""
+    """A ticket reference (e.g. to Jira),
+    to be stored in a PointingSession and voted upon by users."""
 
     url = models.URLField(help_text="Link into ticket system", verbose_name="URL")
     title = models.name = models.CharField(
@@ -65,6 +63,10 @@ class Ticket(TimeStampedModel):
         null=True,
         default=False,
     )
+    voted = models.BooleanField(
+        help_text=("Moderator has marked voting complete for this ticket."),
+        default=False,
+    )
 
     def __str__(self):
         return f"{self.pk}: {self.title}"
@@ -79,3 +81,8 @@ class Ticket(TimeStampedModel):
             text = page.text
             self.title = text[text.find("<title>") + 7 : text.find("</title>")]
         return super(Ticket, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = [
+            "id",
+        ]
