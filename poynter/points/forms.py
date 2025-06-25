@@ -1,12 +1,6 @@
 from django import forms
 
-from poynter.points.models import Vote, Ticket
-
-
-class VoteForm(forms.ModelForm):
-    class Meta:
-        model = Vote
-        fields = ("vote",)
+from poynter.points.models import Ticket
 
 
 class TicketForm(forms.ModelForm):
@@ -16,10 +10,11 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = "__all__"
+        # Not sure about this linter hint
+        # fields = "__all__"
+        fields = "fields"
 
     def clean(self):
-
         cleaned_data = super().clean()
         space = cleaned_data.get("space")
         if self.instance.active and space.ticket_set.exclude(id=self.instance.id).filter(

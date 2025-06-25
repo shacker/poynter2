@@ -1,5 +1,5 @@
-from django.http import HttpResponse
 from django.core.cache import cache
+from django.http import HttpResponse
 
 
 def tally_single(request):
