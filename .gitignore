@@ -1,0 +1,84 @@
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### SublimeText ###
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+*.sublime-workspace
+
+# project files should be checked into the repository, unless a significant
+# proportion of contributors will probably not be using SublimeText
+# *.sublime-project
+
+# VSCode
+.vscode/
+
+# PyCharm
+.codebuddy/
+.idea/
+
+# Basics
+*.py[cod]
+__pycache__
+.pytest_cache
+TAGS
+
+# Logs
+logs
+*.log
+pip-log.txt
+npm-debug.log*
+
+# Unit test / coverage reports
+.coverage*
+.tox
+nosetests.xml
+htmlcov
+coverage_html_report
+
+# Translations
+*.mo
+*.pot
+*.po
+
+
+# Vim
+*~
+*.swp
+*.swo
+
+# mypy
+.mypy_cache
+
+# virtual environments
+.env
+.venv
+
+# User-uploaded media
+media/
+
+staticfiles/
+local.py
+local.yml
+.cache/
+
+*egg-info/
+
+# dumped profile stats
+*.profile
+
+# lock files
+*lock*
+
+# MS Graph authentication cache file
+token_cache.bin
+
+# Local ENV VAR config for Goodconf
+ap_template.yml
+ap_template.json

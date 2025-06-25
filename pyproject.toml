@@ -1,0 +1,26 @@
+[project]
+name = "proj_1"
+version = "1.0"
+requires-python = ">3.13"
+dependencies = [
+    "django",
+]
+
+[tool.ruff]
+
+# Same as for Black, for compatibility
+line-length = 100
+
+# Rules are listed here: https://docs.astral.sh/ruff/rules/
+# E is pycodestyle; F is all of the pyflakes rules (E, F are default)
+# I001 is sort imports; I002 = missig required import
+# S is flake8-bandit rules (security)
+# DJ is Django rules
+lint.select = ["E", "F", "S", "I001", "I002", "DJ"]
+
+# S101 don't trigger on asserts
+# S311 don't trigger on randint
+lint.ignore = ["S101", "S311"]
+
+# Exclude directories
+extend-exclude = ["migrations"]

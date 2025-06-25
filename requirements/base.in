@@ -1,0 +1,21 @@
+black
+boto3
+crispy-bootstrap4
+dj-database-url
+django
+django-alive
+django-allauth
+django-crispy-forms
+django-extensions
+django-redis
+django-ses
+django-storages
+django-webserver[pyuwsgi]
+goodconf
+psycopg2-binary
+pytest
+pytz
+requests
+ruamel.yaml  # Used by goodconf
+sentry-sdk
+wsgi_basic_auth

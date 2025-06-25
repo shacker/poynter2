@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+
+{% load account %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Signup Closed{% endblock %}
+
+{% block inner %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="card">
+
+          <div class="card-header">
+            Signup Closed
+          </div>
+
+          <div class="card-body">
+            Sorry, this site does not allow users to create their own accounts.
+          </div>
+
+        </div>
+      </div>
+    </div> <!-- /.row -->
+  </div>
+{% endblock %}

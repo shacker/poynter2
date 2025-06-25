@@ -1,0 +1,7 @@
+--constraint ../requirements.txt
+
+django-debug-toolbar
+icecream
+ruff
+pip-tools
+pre-commit

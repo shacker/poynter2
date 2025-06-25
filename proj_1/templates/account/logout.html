@@ -1,0 +1,29 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}Sign Out{% endblock %}
+
+{% block inner %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="card">
+
+          <div class="card-header">
+            Sign Out
+          </div>
+
+          <div class="card-body">
+            <p>Are you sure you want to sign out?</p>
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <input class="btn btn-block btn-primary mb-2" type="submit" value="Sign Out"/>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div> <!-- /.row -->
+  </div>
+{% endblock %}

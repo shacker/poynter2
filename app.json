@@ -1,0 +1,18 @@
+{
+  "buildpacks": [
+    {"url": "heroku/python"}, {"url": "heroku/procfile"}
+  ],
+  "environments": {
+    "test": {
+      "addons": ["heroku-postgresql:in-dyno", "heroku-redis:in-dyno"],
+      "env": {
+        "SECRET_KEY": "not-secret",
+        "SENTRY_DSN": ""
+      },
+      "scripts": {"test": "pytest"}
+    }
+  },
+  "scripts": {
+    "postdeploy": "scripts/load_database_template.py"
+  }
+}
