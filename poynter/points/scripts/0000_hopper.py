@@ -41,15 +41,12 @@ def run(*args):
 
             for mod in moderators:
                 user = User.objects.get(username=mod)
-                Space.objects.get_or_create(moderator=user, project=project)
+                try:
+                    Space.objects.get_or_create(moderator=user, project=project, is_open=True)
+                except IntegrityError:
+                    pass
 
             # Normal users with spaces here too?
-
-        # Set half of spaces to Open
-        for space in Space.objects.all():
-            if space.id % 2 == 0:  # Even number
-                space.is_open = True
-                space.save()
 
         # Make tickets in one space - these are what we'll mostly work with.
         proj = Project.objects.get(name="Cosmos")

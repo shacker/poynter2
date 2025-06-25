@@ -29,43 +29,53 @@
             <div class="col">
 
                 <h3>Current ticket:</h3>
-                <a href="{{ ticket.url }}" target="_blank">{{ active_ticket }}</a>
+                {% if active_ticket %}
+                    <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket }}</a>
 
-                <table class="table borderless mt-4 mb-4">
-                    <form action="{% url 'points:tally_single' %}" method="post">
-                        <input type="hidden" name="space" value="{{ space.slug }}">
-                        <input type="hidden" name="username" value="{{ user.username }}">
-                        <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
 
-                        {% for number in numbers %}
-                            {# Janky. Better way to iterate a list of buttons AND row break after every third one? #}
-                            {% if forloop.counter0 == 0 or forloop.counter0 == 3 %}<tr>{% endif %}
-                                <td>
-                                    <button type="button" class="btn btn-primary"
-                                            name="number" value="{{ number.0 }}"
-                                            hx-post="{% url 'points:tally_single' %}"
-                                            hx-include="form"
-                                            hx-swap="none"
-                                        >
-                                        {{ number.1 }} <span class="badge badge-light">{{ number.0 }}</span>
-                                    </button>
-                                </td>
-                            {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}</tr>{% endif %}
-                        {% endfor %}
-                    </form>
-                </table>
+                    <table class="table borderless mt-4 mb-4">
+                        <form action="{% url 'points:tally_single' %}" method="post">
+                            <input type="hidden" name="space" value="{{ space.slug }}">
+                            <input type="hidden" name="username" value="{{ user.username }}">
+                            <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
+
+                            {% for number in numbers %}
+                                {# Janky. Better way to iterate a list of buttons AND row break after every third one? #}
+                                {% if forloop.counter0 == 0 or forloop.counter0 == 3 %}<tr>{% endif %}
+                                    <td>
+                                        <button type="button" class="btn btn-primary"
+                                                name="number" value="{{ number.0 }}"
+                                                hx-post="{% url 'points:tally_single' %}"
+                                                hx-include="form"
+                                                hx-swap="none"
+                                            >
+                                            {{ number.1 }} <span class="badge badge-light">{{ number.0 }}</span>
+                                        </button>
+                                    </td>
+                                {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}</tr>{% endif %}
+                            {% endfor %}
+                        </form>
+                    </table>
+
+                {% else %}
+                    There are no currently active tickets in this space.
+                {% endif %}
 
                 <hr />
 
-                <h3 class="mt-4">Remaining tickets for today</h3>
-                <ul>
-                    {% for ticket in space.ticket_set.all %}
-                        <li>
-                            <a href="{{ ticket.url }}" target="_blank">{{ ticket }}</a>
-                            {% if ticket.active %}VOTE{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% if space.ticket_set.all %}
+                    <h3 class="mt-4">Remaining tickets for today</h3>
+                    <ul>
+                        {% for ticket in space.ticket_set.all %}
+                            <li>
+                                <a href="{{ ticket.url }}" target="_blank">{{ ticket }}</a>
+                                {% if ticket.active %}VOTE{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    There are no tickets remaining to be pointed.
+                {% endif %}
             </div>
 
 

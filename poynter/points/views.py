@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import datetime
 
 from poynter.points.forms import VoteForm
-from poynter.points.models import Project, Space, Vote
+from poynter.points.models import Project, Space, Ticket, Vote
 
 
 def home(request):
@@ -17,8 +17,10 @@ def space(request, slug: str):
     space = get_object_or_404(Space, slug=slug)
     numbers = [(1, "One"), (2, "Two"), (3, "Three"), (5, "Five"), (8, "Eight"), (13, "Thirteen")]
 
-    # try/except
-    active_ticket = space.ticket_set.get(active=True)
+    try:
+        active_ticket = space.ticket_set.get(active=True)
+    except Ticket.DoesNotExist:
+        active_ticket = None
 
     return render(
         request,
