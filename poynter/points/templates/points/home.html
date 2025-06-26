@@ -3,14 +3,16 @@
 {% block title %}Points Home{% endblock %}
 
 {% block content %}
+
+    {% if user.is_authenticated %}
     <h2>Pointing Spaces</h2>
 
     <div class="text-muted mb-4">
-    {% if open_spaces %}
-        Click open door to enter a voting space.
-    {% else %}
-        No spaces are currently open for voting, sorry.
-    {% endif %}
+        {% if open_spaces %}
+            Click open door to enter a voting space.
+        {% else %}
+            No spaces are currently open for voting, sorry.
+        {% endif %}
     </div>
 
     <table class="table">
@@ -50,4 +52,8 @@
                 {% endfor %}
         {% endfor %}
     </table>
+
+    {% else %}
+        Please log in to use Poynter
+    {% endif %}
 {% endblock %}
