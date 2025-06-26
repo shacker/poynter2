@@ -111,12 +111,8 @@
                 </div>
             </div>
         </div>
-        </div>
-
-
-    {% else %}
-        {{ space.slug }} is not currently open for voting.
     {% endif %}
+
 
     {% if user == space.moderator %}
 
@@ -145,5 +141,8 @@
         </div>
 
     {% endif %}
+
+
+    </div>
 
 {% endblock %}
