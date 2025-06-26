@@ -4,16 +4,10 @@
 
 {% block extra_style %}
   <style>
-    .points-buttons button.btn  {
-        font-size: 200%;
+    button .badge {
+        font-size: 225%;
         margin-right: 20px;
-        margin-bottom: 20px;
-    }
-    .badge {
-        font-size: 200%;
-    }
-    .borderless td, .borderless th {
-        border: none;
+        padding-right: 10px;
     }
   </style>
 {% endblock extra_style %}
@@ -21,57 +15,47 @@
 {% block content %}
 
     {% if space.is_open %}
-        <h2 class="mb-4">Voting in space {{ space.slug }}</h2>
+
 
         <div class="container">
         <div class="row">
             <div class="col">
 
-                <h3>Current ticket:</h3>
                 {% if active_ticket and not active_ticket.voted %}
-                    <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket }}</a>
+                    <h3>Voting on: <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
 
 
-                    <table class="table borderless mt-4 mb-4">
-                        <form action="{% url 'points:tally_single' %}" method="post">
+                        <form action="{% url 'points:tally_single' %}" method="post" class="mt-4">
                             <input type="hidden" name="space" value="{{ space.slug }}">
                             <input type="hidden" name="username" value="{{ user.username }}">
                             <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
-
                             {% for number in numbers %}
-                                {# Janky. Better way to iterate a list of buttons AND row break after every third one? #}
-                                {% if forloop.counter0 == 0 or forloop.counter0 == 3 %}<tr>{% endif %}
-                                    <td>
-                                        <button type="button" class="btn btn-primary"
-                                                name="number" value="{{ number.0 }}"
-                                                hx-post="{% url 'points:tally_single' %}"
-                                                hx-include="form"
-                                                hx-swap="none"
-                                            >
-                                            {{ number.1 }} <span class="badge badge-light">{{ number.0 }}</span>
-                                        </button>
-                                    </td>
-                                {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}</tr>{% endif %}
+                                <button type="button" class="btn btn-primary"
+                                        name="number" value="{{ number.0 }}"
+                                        hx-post="{% url 'points:tally_single' %}"
+                                        hx-include="form"
+                                        hx-swap="none"
+                                    >
+                                    <span class="badge badge-light">{{ number.0 }}</span>
+                                </button>
                             {% endfor %}
                         </form>
-                    </table>
+
 
                 {% else %}
                     There are no currently active tickets in this space.
                 {% endif %}
 
-                <hr />
 
                 {% if space.ticket_set.all %}
                     <h3 class="mt-4">Tickets for today</h3>
                     <table class="table">
                         <tr>
                             <th>Title</th>
-                            <th>Active</th>
                             <th>Voted</th>
                             {% if user == space.moderator %}
                                 <th>Open/Close</th>
-                                <th>Activate</th>
+                                <th>Make Active</th>
                             {% endif %}
                         </tr>
                         {% for ticket in space.ticket_set.all %}
@@ -81,18 +65,19 @@
                                         {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                                     </a>
                                 </td>
-                                <td>{% if ticket.active %}<i class="bi bi-radioactive"></i>{% endif %}</td>
                                 <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
                                 {% if user == space.moderator %}
                                     <td>
-                                        <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" class="btn btn-small btn-primary mt-2">
+                                        <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" >
                                             <i class="bi bi-app-indicator"></i>
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" class="btn btn-small btn-primary mt-2">
-                                            <i class="bi bi-battery-charging"></i>
-                                        </a>
+                                        {% if not ticket.active %}
+                                            <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
+                                                <i class="bi bi-battery-charging"></i>
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 {% endif %}
 
@@ -109,21 +94,22 @@
 
 
             <div class="col-2">
-                <h4>Members</h4>
+                <p><i>Space: {{ space.slug }}</i></p>
+                <a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-sm btn-primary mb-2">
+                    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
+                </a>
 
-                <div class="card" style="width: 18rem;">
+                <div class="card mt-2" style="width: 18rem;">
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Voting members</b></li>
                         {% for member in space.members.all  %}
                             <li class="list-group-item">{{ member.username }}</li>
                         {% endfor %}
                     </ul>
                 </div>
 
-                <a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-small btn-primary mt-2">
-                    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
-                </a>
 
-                <p>should get checkmarks in real time as votes come in</p>
+
             </div>
         </div>
         </div>
@@ -145,7 +131,7 @@
             {% for username in space.members.all %}
                 <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
             {% endfor %}
-            <input class="btn btn-block btn-primary mb-2" type="submit" value="Boot"/>
+            <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
         </form>
 
 

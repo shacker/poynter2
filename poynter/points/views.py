@@ -56,14 +56,15 @@ def open_close_ticket(request, slug: str, ticket_id: int):
 
 
 def activate_ticket(request, slug: str, ticket_id: int):
-    """Allow moderator to make a ticket active or inactive in a space. Simple toggle.
+    """Allow moderator to make a ticket active in a space. Simple toggle.
     Must set other active tickets to null first.
     """
 
     space = get_object_or_404(Space, slug=slug)
     ticket = get_object_or_404(Ticket, id=ticket_id)
     space.ticket_set.all().update(active=None)
-    ticket.active = not ticket.active
+    ticket.active = True
+    ticket.voted = False
     ticket.save()
 
     return redirect(reverse("points:space", kwargs={"slug": space.slug}))
