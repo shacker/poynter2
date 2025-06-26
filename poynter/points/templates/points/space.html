@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Space {{ space.slug }}<{% endblock %}
+{% block title %}Space {{ space.slug }}{% endblock %}
 
 {% block extra_style %}
   <style>
@@ -15,8 +15,6 @@
 {% block content %}
 
     {% if space.is_open %}
-
-
         <div class="container">
         <div class="row">
             <div class="col">
@@ -24,23 +22,21 @@
                 {% if active_ticket and not active_ticket.voted %}
                     <h3>Voting on: <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
 
-
-                        <form action="{% url 'points:tally_single' %}" method="post" class="mt-4">
-                            <input type="hidden" name="space" value="{{ space.slug }}">
-                            <input type="hidden" name="username" value="{{ user.username }}">
-                            <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
-                            {% for number in numbers %}
-                                <button type="button" class="btn btn-primary"
-                                        name="number" value="{{ number.0 }}"
-                                        hx-post="{% url 'points:tally_single' %}"
-                                        hx-include="form"
-                                        hx-swap="none"
-                                    >
-                                    <span class="badge badge-light">{{ number.0 }}</span>
-                                </button>
-                            {% endfor %}
-                        </form>
-
+                    <form action="{% url 'points:tally_single' %}" method="post" class="mt-4">
+                        <input type="hidden" name="space" value="{{ space.slug }}">
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                        <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
+                        {% for number in numbers %}
+                            <button type="button" class="btn btn-primary"
+                                    name="number" value="{{ number.0 }}"
+                                    hx-post="{% url 'points:tally_single' %}"
+                                    hx-include="form"
+                                    hx-swap="none"
+                                >
+                                <span class="badge badge-light">{{ number.0 }}</span>
+                            </button>
+                        {% endfor %}
+                    </form>
 
                 {% else %}
                     There are no currently active tickets in this space.
@@ -48,48 +44,54 @@
 
 
                 {% if space.ticket_set.all %}
-                    <h3 class="mt-4">Tickets for today</h3>
-                    <table class="table w-75">
-                        <tr>
-                            <th>Title</th>
-                            <th>Voted</th>
-                            {% if user == space.moderator %}
-                                <th>Open/Close</th>
-                                <th>Make Active</th>
-                            {% endif %}
-                        </tr>
-                        {% for ticket in space.ticket_set.all %}
-                            <tr>
-                                <td>
-                                    <a href="{{ ticket.url }}" target="_blank">
-                                        {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
-                                    </a>
-                                </td>
-                                <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
-                                {% if user == space.moderator %}
-                                    <td>
-                                        <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" >
-                                            <i class="bi bi-app-indicator"></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if not ticket.active %}
-                                            <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
-                                                <i class="bi bi-battery-charging"></i>
-                                            </a>
-                                        {% endif %}
-                                    </td>
-                                {% endif %}
 
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    <div class="card w-75 mt-4">
+                        <div class="card-header">
+                            <b>Tickets for Today</b>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Voted</th>
+                                    {% if user == space.moderator %}
+                                        <th>Open/Close</th>
+                                        <th>Make Active</th>
+                                    {% endif %}
+                                </tr>
+                                {% for ticket in space.ticket_set.all %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ ticket.url }}" target="_blank">
+                                                {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
+                                            </a>
+                                        </td>
+                                        <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
+                                        {% if user == space.moderator %}
+                                            <td>
+                                                <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" >
+                                                    <i class="bi bi-app-indicator"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if not ticket.active %}
+                                                    <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
+                                                        <i class="bi bi-battery-charging"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+
+                                    </tr>
+                                {% endfor %}
+                            </table>
+
+                        </div>
+                    </div>
 
                 {% else %}
                     There are no tickets remaining to be pointed.
                 {% endif %}
-
-
             </div>
 
 
@@ -107,9 +109,6 @@
                         {% endfor %}
                     </ul>
                 </div>
-
-
-
             </div>
         </div>
         </div>
@@ -123,7 +122,7 @@
 
         <div class="card w-50 mt-4">
             <div class="card-header">
-                Moderator Tools
+                <b>Moderator Tools</b>
             </div>
             <div class="card-body">
                 <h5 class="card-title">Open/Close Space</h5>
