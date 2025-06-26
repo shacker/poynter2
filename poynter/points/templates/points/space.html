@@ -49,7 +49,7 @@
 
                 {% if space.ticket_set.all %}
                     <h3 class="mt-4">Tickets for today</h3>
-                    <table class="table">
+                    <table class="table w-75">
                         <tr>
                             <th>Title</th>
                             <th>Voted</th>
@@ -120,20 +120,30 @@
     {% endif %}
 
     {% if user == space.moderator %}
-        <h3>Moderator Tools</h3>
-        <h4>Open/Close Space</h4>
-        <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-small btn-primary mt-2">
-            {% if space.is_open %}Close{% else %}Open{% endif %} Space
-        </a>
 
-        <h4 class="mt-4">Boot Users</h4>
-        <form action="{% url 'points:boot_users' space.slug %}" method="get">
-            {% for username in space.members.all %}
-                <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
-            {% endfor %}
-            <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
-        </form>
+        <div class="card w-50 mt-4">
+            <div class="card-header">
+                Moderator Tools
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Open/Close Space</h5>
+                <p class="card-text">
+                    <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                        {% if space.is_open %}Close{% else %}Open{% endif %} Space
+                    </a>
+                </p>
 
+                <h5 class="card-title">Boot Users</h5>
+                <p class="card-text">
+                    <form action="{% url 'points:boot_users' space.slug %}" method="get">
+                        {% for username in space.members.all %}
+                            <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+                        {% endfor %}
+                        <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
+                    </form>
+                </p>
+            </div>
+        </div>
 
     {% endif %}
 
