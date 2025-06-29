@@ -1,50 +1,73 @@
 {% if user == space.moderator %}
 
-    <div class="card w-50 mt-4">
+    <h4>Moderator Tools</h4>
+
+    <div class="col-lg-3">
+        <div class="card">
         <div class="card-header">
-            <b>Moderator Tools</b>
+            <b>{% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket</b>
         </div>
         <div class="card-body">
-            <h5 class="card-title">Open/Close Voting</h5>
+            Close and advance to next.<br />
+            {% if not all_voted %}NOT{% endif %} All members have voted on this ticket
             <p class="card-text">
-                <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                    {% if space.is_open %}Close{% else %}Open{% endif %} Voting
+                <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
+                    {% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket
                 </a>
             </p>
-
-            <h5 class="card-title">Reset Space</h5>
-            Warning: Removes all votes in current session.
-            <p class="card-text">
-                <a href="{% url 'points:clear_space_cache' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                    Clear
-                </a>
-            </p>
-
-            <h5 class="card-title">Boot Users</h5>
-            <p class="card-text">
-                <form action="{% url 'points:boot_users' space.slug %}" method="get">
-                    {% for username in space.members.all %}
-                        <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
-                    {% endfor %}
-                    <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
-                </form>
-            </p>
-
-            {% if active_ticket %}
-                <h5 class="card-title">Open/Close Ticket</h5>
-                {% if not all_voted %}NOT{% endif %} All members have voted on this ticket
-                <p class="card-text">
-                    <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
-                        {% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket
-                    </a>
-                </p>
-            {% endif %}
-
-
-
+        </div>
         </div>
     </div>
 
-    <pre>{{tallies}}</pre>
+    <div class="col-lg-3">
+        <div class="card">
+        <div class="card-header">
+            <b>Reset Space</b>
+        </div>
+        <div class="card-body">
+            <p class="card-text">Removes all votes in current session.</p>
+            <p class="card-text">
+                <a href="{% url 'points:clear_space_cache' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                    Reset
+                </a>
+            </p>
+        </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card">
+        <div class="card-header">
+            <b>{% if space.is_open %}Close{% else %}Open{% endif %} Voting</b>
+        </div>
+        <div class="card-body">
+             <p class="card-text">Turn off voting capability for members</p>
+            <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                {% if space.is_open %}Close{% else %}Open{% endif %} Voting
+            </a>
+        </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-3">
+        <div class="card">
+        <div class="card-header">
+            <b>Boot Users</b>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'points:boot_users' space.slug %}" method="get">
+                {% for username in space.members.all %}
+                    <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+                {% endfor %}
+                <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    {# Debug: Uncomment to see all votes in this space #}
+    {# <pre>{{tallies}}</pre> #}
 
 {% endif %}
