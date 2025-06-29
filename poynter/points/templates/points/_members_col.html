@@ -3,12 +3,28 @@
     {% if user in space.members.all %}Leave{% else %}Join{% endif %}
 </a>
 
+
+{% comment %}
+    To whom do we show votes?
+    If you are the moderator, we always show all votes.
+
+    We always show YOUR vote to you.
+    Once the moderator closes the ticket, we show ALL votes on this ticket.
+{% endcomment %}
+
 <div class="card mt-2" style="width: 18rem;">
     <ul class="list-group list-group-flush">
         <li class="list-group-item"><b>Voting members</b></li>
         {% for member, vote in members.items  %}
             <li class="list-group-item">
-                {{ member }}{% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
+                {% if user == space.moderator or active_ticket.voted %}
+                    {{ member }}{% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
+                {% else %}
+                    {{ member }}
+                    {% if active_ticket.voted or user == member %}
+                        {% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
+                    {% endif %}
+                {% endif %}
             </li>
         {% endfor %}
     </ul>

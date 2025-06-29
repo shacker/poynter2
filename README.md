@@ -7,3 +7,5 @@ Moderator can switch the active ticket at any time.
 Moderator is told whether all votes are in or not
 
 Each space has one moderator. No special roles or permissiosn are needed - just associate space with user
+
+We don't auto-advance to next ticket because people want to look at who just voted AND the moderator has their reasons for picking the next active ticket.

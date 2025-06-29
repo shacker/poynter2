@@ -2,22 +2,23 @@
 
     <h4>Moderator Tools</h4>
 
-    <div class="col-lg-3">
-        <div class="card">
-        <div class="card-header">
-            <b>{% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket</b>
+    {% if active_ticket %}
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <b>{% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket</b>
+                </div>
+                <div class="card-body">
+                    {% if not all_voted %}NOT{% endif %} All members have voted on this ticket
+                    <p class="card-text">
+                        <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
+                            {% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket
+                        </a>
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            Close and advance to next.<br />
-            {% if not all_voted %}NOT{% endif %} All members have voted on this ticket
-            <p class="card-text">
-                <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
-                    {% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket
-                </a>
-            </p>
-        </div>
-        </div>
-    </div>
+    {% endif %}
 
     <div class="col-lg-3">
         <div class="card">
