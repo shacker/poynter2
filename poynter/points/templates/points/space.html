@@ -14,7 +14,7 @@
 
 {% block content %}
 
-    {% if space.is_open %}
+    {% if space.is_open or user == space.moderator %}
         <div class="container">
         <div class="row">
             <div class="col">
@@ -114,6 +114,8 @@
                 </div>
             </div>
         </div>
+    {% else %}
+        Space {{ space.slug }} is not currently open for voting
     {% endif %}
 
 
@@ -124,14 +126,14 @@
                 <b>Moderator Tools</b>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Open/Close Space</h5>
+                <h5 class="card-title">Open/Close Voting</h5>
                 <p class="card-text">
                     <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                        {% if space.is_open %}Close{% else %}Open{% endif %} Space
+                        {% if space.is_open %}Close{% else %}Open{% endif %} Voting
                     </a>
                 </p>
 
-                <h5 class="card-title">Clear Space Cache</h5>
+                <h5 class="card-title">Reset Space</h5>
                 Warning: Removes all votes in current session.
                 <p class="card-text">
                     <a href="{% url 'points:clear_space_cache' space.slug %}" class="btn btn-sm btn-primary mt-2">

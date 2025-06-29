@@ -30,9 +30,6 @@ def run(*args):
         for username in users:
             try:
                 user = User.objects.create_user(username=username, is_staff=True)
-                if username in moderators:
-                    user.is_superuser = True
-                    user.save()
             except IntegrityError:
                 pass
 
