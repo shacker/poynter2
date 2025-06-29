@@ -22,6 +22,20 @@
     <div class="col-lg-3">
         <div class="card">
         <div class="card-header">
+            <b>{% if space.is_open %}Close{% else %}Open{% endif %} Voting</b>
+        </div>
+        <div class="card-body">
+             <p class="card-text">Turn off voting capability for members</p>
+            <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                {% if space.is_open %}Close{% else %}Open{% endif %} Voting
+            </a>
+        </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card">
+        <div class="card-header">
             <b>Reset Space</b>
         </div>
         <div class="card-body">
@@ -34,22 +48,6 @@
         </div>
         </div>
     </div>
-
-    <div class="col-lg-3">
-        <div class="card">
-        <div class="card-header">
-            <b>{% if space.is_open %}Close{% else %}Open{% endif %} Voting</b>
-        </div>
-        <div class="card-body">
-             <p class="card-text">Turn off voting capability for members</p>
-            <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                {% if space.is_open %}Close{% else %}Open{% endif %} Voting
-            </a>
-        </div>
-        </div>
-    </div>
-
-
 
     <div class="col-lg-3">
         <div class="card">
