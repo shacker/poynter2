@@ -46,6 +46,7 @@ THIRD_PARTY_APPS = [
     "django_alive",
     "django_extensions",
     "django_webserver",
+    "jsoneditor",
 ]
 
 LOCAL_APPS = [
@@ -240,3 +241,8 @@ CSRF_COOKIE_HTTPONLY = True
 # Ensure cookies get a `secure` header per SOC requirements.
 # Breaks local login if True on localhost!
 SESSION_COOKIE_SECURE = False if DEBUG else True
+
+# JS and CSS for Admin JSON editor
+# Check for upgrades at https://cdnjs.com/libraries/jsoneditor
+JSON_EDITOR_JS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.js"
+JSON_EDITOR_CSS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.css"

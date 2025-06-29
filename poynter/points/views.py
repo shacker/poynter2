@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from poynter.points.models import Project, Space, Ticket
+from poynter.points.models import Project, Snapshot, Space, Ticket
 from poynter.points.ops import get_votes_for_space
 
 
@@ -101,11 +101,18 @@ def activate_ticket(request, space_name: str, ticket_id: int):
 
 
 def open_close_space(request, space_name: str):
-    "Allow moderator to open or close a space for voting. Simple toggle."
+    """Allow moderator to open or close a space for voting. Simple toggle.
+    Closing a space also auto-saves a snapshot of vote state for posterity.
+    """
 
     space = get_object_or_404(Space, slug=space_name)
     space.is_open = False if space.is_open else True
     space.save()
+
+    if not space.is_open:
+        # Get voting state (with averages) from cache
+        votes_data = get_votes_for_space(space_name)
+        Snapshot.objects.create(space=space, snapshot=votes_data)
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 

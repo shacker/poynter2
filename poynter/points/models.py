@@ -44,6 +44,20 @@ class Space(TimeStampedModel):
         ]
 
 
+class Snapshot(TimeStampedModel):
+    """When voting is closed for a space, automatically save voting snapshot
+    as a JSONField for posterity.
+    """
+
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    snapshot = models.JSONField(
+        default=dict, blank=True, help_text="Capture state of voting when Space is closed."
+    )
+
+    def __str__(self):
+        return f"{self.space.slug}: {self.created}"
+
+
 class Ticket(TimeStampedModel):
     """A ticket reference (e.g. to Jira),
     to be stored in a PointingSession and voted upon by users."""

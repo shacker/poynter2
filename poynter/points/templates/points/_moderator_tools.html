@@ -23,10 +23,10 @@
     <div class="col-lg-3">
         <div class="card">
         <div class="card-header">
-            <b>{% if space.is_open %}Close{% else %}Open{% endif %} Voting</b>
+            <b>{% if space.is_open %}Close{% else %}Open{% endif %} Voting for Space</b>
         </div>
         <div class="card-body">
-             <p class="card-text">Turn off voting capability for members</p>
+             <p class="card-text">Turn on/off voting capability for members. When closing, save snapshot of full tally.</p>
             <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
                 {% if space.is_open %}Close{% else %}Open{% endif %} Voting
             </a>
