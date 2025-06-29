@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
+from poynter.points.forms import AddTicketForm
 from poynter.points.models import Project, Snapshot, Space, Ticket
 from poynter.points.ops import get_votes_for_space
 
@@ -135,3 +136,25 @@ def clear_space_cache(request, space_name: str):
     cache.delete(space_name)
 
     return redirect(reverse("points:space", kwargs={"space_name": space_name}))
+
+
+def add_ticket(request, space_name: str):
+    "Allow moderator to add a ticket to one their spaces"
+
+    # spaces = Space.objects.filter(moderator=request.user)
+    # Limit to the space we're adding from
+
+    if request.method == "POST":
+        form = AddTicketForm(request.POST)
+        space = get_object_or_404(Space, slug=space_name)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.space = space
+            ticket.save()
+            return redirect(reverse("points:space", kwargs={"space_name": space_name}))
+
+    else:
+
+        form = AddTicketForm()
+
+    return render(request, "points/add_ticket.html", {"form": form, "space_name": space_name})

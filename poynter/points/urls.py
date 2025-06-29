@@ -22,4 +22,5 @@ urlpatterns = [
     path("clear_space_cache/<str:space_name>", views.clear_space_cache, name="clear_space_cache"),
     path("boot_users/<str:space_name>", views.boot_users, name="boot_users"),
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
+    path("add_ticket/<str:space_name>", views.add_ticket, name="add_ticket"),
 ]

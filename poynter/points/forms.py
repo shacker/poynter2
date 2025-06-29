@@ -23,3 +23,13 @@ class TicketForm(forms.ModelForm):
                 "Set others to Unknown before changing this one."
             )
         return self.cleaned_data
+
+
+class AddTicketForm(forms.ModelForm):
+    """Moderator can add new tickets to a space on the fly.
+    space_name is included in the URL, not specified in form.
+    """
+
+    class Meta:
+        model = Ticket
+        fields = ["url", "title"]

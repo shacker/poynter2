@@ -246,3 +246,6 @@ SESSION_COOKIE_SECURE = False if DEBUG else True
 # Check for upgrades at https://cdnjs.com/libraries/jsoneditor
 JSON_EDITOR_JS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.js"
 JSON_EDITOR_CSS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.css"
+
+# See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+CRISPY_TEMPLATE_PACK = "bootstrap4"
