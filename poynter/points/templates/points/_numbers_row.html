@@ -1,20 +1,31 @@
-{% if space.is_open or user == space.moderator %}
+{% if space.is_open %}
     <h3>Voting on: <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
 
-    <form action="{% url 'points:tally_single' %}" method="post" class="mt-4">
+    <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">
         <input type="hidden" name="space" value="{{ space.slug }}">
         <input type="hidden" name="username" value="{{ user.username }}">
         <input type="hidden" name="ticket" value="{{ active_ticket.id }}">
         {% for number in numbers %}
-            <button type="submit" class="btn btn-primary"
-                    name="number" value="{{ number.0 }}"
-                    hx-post="{% url 'points:tally_single' %}"
-                    hx-include="form"
-                    hx-swap="none"
-                    hx-vals='{"number": "{{ number.0 }}"}'
-                >
-                <span class="badge badge-light">{{ number.0 }}</span>
-            </button>
+
+        <button type="submit"
+                class="btn btn-primary"
+                name="number" value="{{ number.0 }}"
+                hx-post="{% url 'points:tally_single' %}"
+                hx-include="form"
+                hx-swap="none"
+                hx-vals='{"number": "{{ number.0 }}"}'
+                onclick="
+                    {# Deselect all buttons #}
+                    document.querySelectorAll('.btn-clicked').forEach(btn => {
+                        btn.classList.remove('btn-clicked');
+                        btn.classList.add('btn-primary');
+                    });
+                    {# Change color of selected button #}
+                    this.classList.add('btn-clicked'); this.classList.remove('btn-primary');
+                "
+            <span class="badge badge-light">{{ number.0 }}</span>
+        </button>
+
         {% endfor %}
     </form>
 {% else %}

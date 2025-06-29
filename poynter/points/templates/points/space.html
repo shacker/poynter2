@@ -4,10 +4,16 @@
 
 {% block extra_style %}
   <style>
-    button .badge {
+    #vote_numbers button {
         font-size: 225%;
         margin-right: 20px;
-        padding-right: 10px;
+        padding: 0 15px 0 15px;
+    }
+
+    {# Button changes color when voting #}
+    #vote_numbers .btn-clicked {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
     }
   </style>
 {% endblock extra_style %}
