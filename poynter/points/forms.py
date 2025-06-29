@@ -10,7 +10,7 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ["url", "title", "space", "active", "voted"]
+        fields = ["url", "title", "space", "active", "closed"]
 
     def clean(self):
         cleaned_data = super().clean()

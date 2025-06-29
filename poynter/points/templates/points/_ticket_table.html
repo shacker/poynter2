@@ -7,7 +7,7 @@
             <table class="table">
                 <tr>
                     <th>Title</th>
-                    <th>Voted</th>
+                    <th>Closed</th>
                     {% if user == space.moderator %}
                         <th>Open/Close</th>
                         <th>Make Active</th>
@@ -17,10 +17,10 @@
                     <tr>
                         <td>
                             <a href="{{ ticket.url }}" target="_blank">
-                                {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
+                                {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                             </a>
                         </td>
-                        <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
+                        <td>{% if ticket.closed %}<i class="bi bi-bag-check"></i>{% endif %}</td>
                         {% if user == space.moderator %}
                             <td>
                                 <a href="{% url 'points:open_close_ticket' ticket.id %}" >

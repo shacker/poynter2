@@ -9,3 +9,7 @@ Moderator is told whether all votes are in or not
 Each space has one moderator. No special roles or permissiosn are needed - just associate space with user
 
 We don't auto-advance to next ticket because people want to look at who just voted AND the moderator has their reasons for picking the next active ticket.
+
+Differint things:
+ticket.active - this one is currenly being voted on by group
+ticket.closed - moderator has closed ticket, usually after everyone voted

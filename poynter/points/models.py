@@ -63,7 +63,7 @@ class Ticket(TimeStampedModel):
         null=True,
         default=False,
     )
-    voted = models.BooleanField(
+    closed = models.BooleanField(
         help_text=("Moderator has marked voting complete for this ticket."),
         default=False,
     )

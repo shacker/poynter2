@@ -17,11 +17,11 @@
         <li class="list-group-item"><b>Voting members</b></li>
         {% for member, vote in members.items  %}
             <li class="list-group-item">
-                {% if user == space.moderator or active_ticket.voted %}
+                {% if user == space.moderator or active_ticket.closed %}
                     {{ member }}{% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
                 {% else %}
                     {{ member }}
-                    {% if active_ticket.voted or user == member %}
+                    {% if active_ticket.closed or user == member %}
                         {% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
                     {% endif %}
                 {% endif %}
