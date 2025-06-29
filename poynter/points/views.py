@@ -82,13 +82,6 @@ def open_close_ticket(request, ticket_id: int):
     ticket.closed = not ticket.closed
     ticket.save()
 
-    # Try to find next active ticket automatically
-    space.ticket_set.all().update(active=None)
-    next_active = space.ticket_set.filter(closed=False).first()
-    if next_active:
-        next_active.active = True
-        next_active.save()
-
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 
 
