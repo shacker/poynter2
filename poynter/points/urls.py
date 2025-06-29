@@ -5,7 +5,6 @@ from poynter.points import views, views_htmx
 app_name = "points"
 
 urlpatterns = [
-    path("about/", views.about, name="about"),
     path("space/<str:space_name>", views.space, name="space"),
     path("join_leave_space/<str:space_name>", views.join_leave_space, name="join_leave_space"),
     path(

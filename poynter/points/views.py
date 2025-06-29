@@ -14,10 +14,6 @@ def home(request):
     return render(request, "points/home.html", {"projects": projects, "open_spaces": open_spaces})
 
 
-def about(request):
-    return render(request, "points/about.html")
-
-
 def space(request, space_name: str):
     "Detail view for a voting space has permanent URL for a moderator and project."
     space = get_object_or_404(Space, slug=space_name)
