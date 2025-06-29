@@ -1,0 +1,15 @@
+
+<a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-sm btn-primary mb-2">
+    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
+</a>
+
+<div class="card mt-2" style="width: 18rem;">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><b>Voting members</b></li>
+        {% for member, vote in members.items  %}
+            <li class="list-group-item">
+                {{ member }}{% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

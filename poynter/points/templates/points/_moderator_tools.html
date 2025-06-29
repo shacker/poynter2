@@ -1,0 +1,50 @@
+{% if user == space.moderator %}
+
+    <div class="card w-50 mt-4">
+        <div class="card-header">
+            <b>Moderator Tools</b>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Open/Close Voting</h5>
+            <p class="card-text">
+                <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                    {% if space.is_open %}Close{% else %}Open{% endif %} Voting
+                </a>
+            </p>
+
+            <h5 class="card-title">Reset Space</h5>
+            Warning: Removes all votes in current session.
+            <p class="card-text">
+                <a href="{% url 'points:clear_space_cache' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                    Clear
+                </a>
+            </p>
+
+            <h5 class="card-title">Boot Users</h5>
+            <p class="card-text">
+                <form action="{% url 'points:boot_users' space.slug %}" method="get">
+                    {% for username in space.members.all %}
+                        <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+                    {% endfor %}
+                    <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot"/>
+                </form>
+            </p>
+
+            {% if active_ticket %}
+                <h5 class="card-title">Open/Close Ticket</h5>
+                {% if not all_voted %}NOT{% endif %} All members have voted on this ticket
+                <p class="card-text">
+                    <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
+                        {% if active_ticket.voted %}Open{% else %}Close{% endif %} Ticket
+                    </a>
+                </p>
+            {% endif %}
+
+
+
+        </div>
+    </div>
+
+    <pre>{{tallies}}</pre>
+
+{% endif %}

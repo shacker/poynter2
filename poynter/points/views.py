@@ -47,6 +47,7 @@ def space(request, space_name: str):
     return render(
         request,
         "points/space.html",
+        # "points/space_old.html",
         {
             "space": space,
             "active_ticket": active_ticket,

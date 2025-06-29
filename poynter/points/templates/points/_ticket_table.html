@@ -1,0 +1,48 @@
+{% if space.ticket_set.all %}
+    <div class="card w-75 mt-4">
+        <div class="card-header">
+            <b>Tickets for {{ space.slug }}</b>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th>Title</th>
+                    <th>Voted</th>
+                    {% if user == space.moderator %}
+                        <th>Open/Close</th>
+                        <th>Make Active</th>
+                    {% endif %}
+                </tr>
+                {% for ticket in space.ticket_set.all %}
+                    <tr>
+                        <td>
+                            <a href="{{ ticket.url }}" target="_blank">
+                                {% if ticket.voted %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
+                            </a>
+                        </td>
+                        <td>{% if ticket.voted %}<i class="bi bi-bag-check"></i>{% endif %}</td>
+                        {% if user == space.moderator %}
+                            <td>
+                                <a href="{% url 'points:open_close_ticket' ticket.id %}" >
+                                    <i class="bi bi-app-indicator"></i>
+                                </a>
+                            </td>
+                            <td>
+                                {% if not ticket.active %}
+                                    <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
+                                        <i class="bi bi-battery-charging"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    </div>
+
+{% else %}
+    There are no tickets remaining to be pointed.
+{% endif %}
