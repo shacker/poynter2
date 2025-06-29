@@ -41,6 +41,10 @@ def space(request, space_name: str):
                 member_vote = tallies[active_ticket.id][member.username]
                 num_voted += 1
             members[member] = member_vote
+    else:
+        # Still need to show members list when no active ticket
+        for member in space.members.all():
+            members[member] = None
 
     all_voted = num_voted == space.members.count()
 
