@@ -37,14 +37,9 @@
                         {% include "points/_ticket_table.html" %}
                     </div>
 
-                    {% comment %} Temp {% endcomment %}
-                    <!-- Message Display Area -->
+                    <!-- Real-time message displays here -->
                     <div class="message-display" id="message-display">
-                        {% if latest_message %}
-                            {{ latest_message }}
-                        {% else %}
-                            Waiting for broadcast message...
-                        {% endif %}
+                        Waiting for broadcast message...
                     </div>
                 </div>
 

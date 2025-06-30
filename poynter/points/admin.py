@@ -3,7 +3,7 @@ from django.db import models
 from jsoneditor.forms import JSONEditor
 
 from .forms import TicketForm
-from .models import BroadcastMessage, Project, Snapshot, Space, Ticket
+from .models import Project, Snapshot, Space, Ticket
 
 
 class TicketAdmin(admin.ModelAdmin):
@@ -16,10 +16,6 @@ class SpaceAdmin(admin.ModelAdmin):
     filter_horizontal = ("members",)
 
 
-class BMessageAdmin(admin.ModelAdmin):
-    list_display = ("text", "room_name")
-
-
 class SnapshotAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.JSONField: {"widget": JSONEditor()},
@@ -29,5 +25,4 @@ class SnapshotAdmin(admin.ModelAdmin):
 admin.site.register(Space, SpaceAdmin)
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Project)
-admin.site.register(BroadcastMessage, BMessageAdmin)  # temp
 admin.site.register(Snapshot, SnapshotAdmin)

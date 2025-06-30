@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from poynter.points.forms import AddTicketForm
-from poynter.points.models import BroadcastMessage, Project, Snapshot, Space, Ticket
+from poynter.points.models import Project, Snapshot, Space, Ticket
 from poynter.points.ops import get_votes_for_space
 
 
@@ -49,10 +49,6 @@ def space(request, space_name: str):
 
     all_voted = num_voted == space.members.count()
 
-    # Temp
-    latest_message = BroadcastMessage.objects.filter(room_name=room_name).last()
-    print(latest_message)
-
     return render(
         request,
         "points/space.html",
@@ -64,9 +60,7 @@ def space(request, space_name: str):
             "numbers": numbers,
             "space": space,
             "tallies": tallies,
-            # temp
-            "latest_message": latest_message.text if latest_message else "",
-            "host": request.get_host(),  # remove?
+            "host": request.get_host(),
             "room_name": room_name,
         },
     )
@@ -183,8 +177,6 @@ def rt_send_message(request):
         room_name = request.POST.get("room_name", "general")
 
         if message_text:
-            # Save to database
-            BroadcastMessage.objects.create(text=message_text, room_name=room_name)
 
             # Broadcast to all connected clients
             channel_layer = get_channel_layer()
