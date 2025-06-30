@@ -24,6 +24,7 @@ def space(request, space_name: str):
     except Ticket.DoesNotExist:
         active_ticket = None
 
+    current_tickets = space.ticket_set.filter(archived=False)
     tallies = get_votes_for_space(space_name)
 
     # Space members and their voting status
@@ -49,12 +50,13 @@ def space(request, space_name: str):
         request,
         "points/space.html",
         {
-            "space": space,
             "active_ticket": active_ticket,
-            "numbers": numbers,
-            "tallies": tallies,
-            "members": members,
             "all_voted": all_voted,
+            "current_tickets": current_tickets,
+            "members": members,
+            "numbers": numbers,
+            "space": space,
+            "tallies": tallies,
         },
     )
 
@@ -110,6 +112,18 @@ def open_close_space(request, space_name: str):
         # Get voting state (with averages) from cache
         votes_data = get_votes_for_space(space_name)
         Snapshot.objects.create(space=space, snapshot=votes_data)
+
+    return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
+
+
+def archive_tickets(request, space_name: str):
+    """When next week's voting comes, we need to get old tickets out of the way.
+    Set those to archived=True (different from closed).
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    tickets = Ticket.objects.filter(space=space, archived=False)
+    tickets.update(archived=True)
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 

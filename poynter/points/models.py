@@ -81,6 +81,10 @@ class Ticket(TimeStampedModel):
         help_text=("Moderator has marked voting complete for this ticket."),
         default=False,
     )
+    archived = models.BooleanField(
+        help_text=("Tickets from former sessions don't appear on board at all, but we keep them."),
+        default=False,
+    )
 
     def __str__(self):
         return f"{self.pk}: {self.title}"

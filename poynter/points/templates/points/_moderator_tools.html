@@ -40,10 +40,13 @@
             <b>Reset Space</b>
         </div>
         <div class="card-body">
-            <p class="card-text">Removes all votes in current session.</p>
+            <p class="card-text">Remove all votes in current session or Archive current tickets</p>
             <p class="card-text">
                 <a href="{% url 'points:clear_space_cache' space.slug %}" class="btn btn-sm btn-primary mt-2">
                     Reset
+                </a>
+                <a href="{% url 'points:archive_tickets' space.slug %}" class="btn btn-sm btn-info mt-2">
+                    Archive All
                 </a>
             </p>
         </div>

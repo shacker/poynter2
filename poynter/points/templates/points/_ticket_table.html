@@ -13,7 +13,7 @@
                         <th>Make Active</th>
                     {% endif %}
                 </tr>
-                {% for ticket in space.ticket_set.all %}
+                {% for ticket in current_tickets %}
                     <tr>
                         <td>
                             <a href="{{ ticket.url }}" target="_blank">
