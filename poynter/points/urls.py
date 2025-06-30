@@ -23,4 +23,5 @@ urlpatterns = [
     ),
     path("space/<str:space_name>", views.space, name="space"),
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
+    path("rt_send/", views.rt_send_message, name="rt_send_message"),
 ]

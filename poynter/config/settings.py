@@ -1,7 +1,8 @@
-from pathlib import Path
-from django.contrib.messages import constants as message_constants
-import dj_database_url
 import os
+from pathlib import Path
+
+import dj_database_url
+from django.contrib.messages import constants as message_constants
 
 # Load secrets from ENV VARS or local json/yml and hoist them into django settings
 from .config import config
@@ -28,6 +29,7 @@ ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 
 DJANGO_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,6 +49,7 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     "django_webserver",
     "jsoneditor",
+    "channels",
 ]
 
 LOCAL_APPS = [
@@ -249,3 +252,14 @@ JSON_EDITOR_CSS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsone
 
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+ASGI_APPLICATION = "poynter.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

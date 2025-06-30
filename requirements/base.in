@@ -1,6 +1,9 @@
 black
 boto3
+channels
+channels-redis
 crispy-bootstrap4
+daphne
 dj-database-url
 django
 django-alive

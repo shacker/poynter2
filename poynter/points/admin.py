@@ -3,7 +3,7 @@ from django.db import models
 from jsoneditor.forms import JSONEditor
 
 from .forms import TicketForm
-from .models import Project, Snapshot, Space, Ticket
+from .models import BroadcastMessage, Project, Snapshot, Space, Ticket
 
 
 class TicketAdmin(admin.ModelAdmin):
@@ -25,4 +25,5 @@ class SnapshotAdmin(admin.ModelAdmin):
 admin.site.register(Space, SpaceAdmin)
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Project)
+admin.site.register(BroadcastMessage)  # temp
 admin.site.register(Snapshot, SnapshotAdmin)

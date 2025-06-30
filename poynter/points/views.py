@@ -1,9 +1,12 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from poynter.points.forms import AddTicketForm
-from poynter.points.models import Project, Snapshot, Space, Ticket
+from poynter.points.models import BroadcastMessage, Project, Snapshot, Space, Ticket
 from poynter.points.ops import get_votes_for_space
 
 
@@ -45,6 +48,10 @@ def space(request, space_name: str):
 
     all_voted = num_voted == space.members.count()
 
+    # Temp
+    latest_message = BroadcastMessage.objects.last()
+    print(latest_message)
+
     return render(
         request,
         "points/space.html",
@@ -56,6 +63,9 @@ def space(request, space_name: str):
             "numbers": numbers,
             "space": space,
             "tallies": tallies,
+            # temp
+            "latest_message": latest_message.text if latest_message else "",
+            "host": request.get_host(),
         },
     )
 
@@ -163,3 +173,21 @@ def add_ticket(request, space_name: str):
         form = AddTicketForm()
 
     return render(request, "points/add_ticket.html", {"form": form, "space_name": space_name})
+
+
+def rt_send_message(request):
+    if request.method == "POST":
+        message_text = request.POST.get("message", "").strip()
+
+        if message_text:
+            # Save to database
+            BroadcastMessage.objects.create(text=message_text)
+
+            # Broadcast to all connected clients
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "broadcast_room", {"type": "broadcast_message", "message": message_text}
+            )
+
+    # Return empty response for HTMX
+    return HttpResponse("")

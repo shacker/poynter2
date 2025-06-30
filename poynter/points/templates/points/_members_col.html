@@ -29,3 +29,25 @@
         {% endfor %}
     </ul>
 </div>
+
+{# Temporary #}
+{% if user == space.moderator %}
+<div class="moderator-panel">
+    <h3 class="mt-4">Temp Msg Panel</h3>
+    <form hx-post="{% url 'points:rt_send_message' %}"
+            hx-swap="none"
+            hx-on::after-request="this.reset()">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="message" class="form-label">Broadcast Message:</label>
+            <textarea class="form-control"
+                        id="message"
+                        name="message"
+                        rows="3"
+                        placeholder="Type your message here..."
+                        required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send to All Users</button>
+    </form>
+</div>
+{% endif %}
