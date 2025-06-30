@@ -34,7 +34,6 @@ def space(request, space_name: str):
     if active_ticket:
         for member in space.members.all():
             member_vote = None
-            # Member has voted on this ticket
             if member.username in tallies.get(active_ticket.id, {}).keys():
                 member_vote = tallies[active_ticket.id][member.username]
                 num_voted += 1
@@ -149,10 +148,7 @@ def clear_space_cache(request, space_name: str):
 
 
 def add_ticket(request, space_name: str):
-    "Allow moderator to add a ticket to one their spaces"
-
-    # spaces = Space.objects.filter(moderator=request.user)
-    # Limit to the space we're adding from
+    "Allow moderator to add a ticket to a space"
 
     if request.method == "POST":
         form = AddTicketForm(request.POST)
@@ -164,7 +160,6 @@ def add_ticket(request, space_name: str):
             return redirect(reverse("points:space", kwargs={"space_name": space_name}))
 
     else:
-
         form = AddTicketForm()
 
     return render(request, "points/add_ticket.html", {"form": form, "space_name": space_name})

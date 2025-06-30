@@ -5,9 +5,10 @@ from django.core.cache import cache
 
 def get_votes_for_space(space_name: str) -> dict:
     """
-    Get all votes for current workspace WITH computed averages appended.
+    Get all votes for current workspace with computed averages appended.
     Average may not fit an existing Fibonacci number - up to moderator
-    to assign final average from our returned value.
+    to assign final average from returned value. Ticket db IDs are keys in
+    this dict.
 
     {
         8: {
@@ -20,7 +21,7 @@ def get_votes_for_space(space_name: str) -> dict:
         }
     }
 
-    we return that and append as final dict:
+    append averages as a final dict:
     {
         "averages": {
             8: 2.5,
