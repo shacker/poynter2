@@ -21,6 +21,7 @@ def space(request, space_name: str):
     "Detail view for a voting space has permanent URL for a moderator and project."
     space = get_object_or_404(Space, slug=space_name)
     numbers = [(1, "One"), (2, "Two"), (3, "Three"), (5, "Five"), (8, "Eight"), (13, "Thirteen")]
+    room_name = space.slug
 
     try:
         active_ticket = space.ticket_set.get(active=True)
@@ -49,7 +50,7 @@ def space(request, space_name: str):
     all_voted = num_voted == space.members.count()
 
     # Temp
-    latest_message = BroadcastMessage.objects.last()
+    latest_message = BroadcastMessage.objects.filter(room_name=room_name).last()
     print(latest_message)
 
     return render(
@@ -65,7 +66,8 @@ def space(request, space_name: str):
             "tallies": tallies,
             # temp
             "latest_message": latest_message.text if latest_message else "",
-            "host": request.get_host(),
+            "host": request.get_host(),  # remove?
+            "room_name": room_name,
         },
     )
 
@@ -178,15 +180,16 @@ def add_ticket(request, space_name: str):
 def rt_send_message(request):
     if request.method == "POST":
         message_text = request.POST.get("message", "").strip()
+        room_name = request.POST.get("room_name", "general")
 
         if message_text:
             # Save to database
-            BroadcastMessage.objects.create(text=message_text)
+            BroadcastMessage.objects.create(text=message_text, room_name=room_name)
 
             # Broadcast to all connected clients
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "broadcast_room", {"type": "broadcast_message", "message": message_text}
+                f"broadcast_{room_name}", {"type": "broadcast_message", "message": message_text}
             )
 
     # Return empty response for HTMX

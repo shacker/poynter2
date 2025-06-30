@@ -67,7 +67,7 @@
 {% block extra_js %}
     <script>
         // Keep in template so we can populate host into websocket URL dynamically
-        const socket = new WebSocket('ws://{{ host }}/ws/broadcast/');
+        const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ room_name }}');
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             document.getElementById('message-display').textContent = data.message;

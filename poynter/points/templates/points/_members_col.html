@@ -40,6 +40,7 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="message" class="form-label">Broadcast Message:</label>
+            <input type="hidden" name="room_name" value="{{ space.slug }}">
             <textarea class="form-control"
                         id="message"
                         name="message"

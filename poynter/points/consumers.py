@@ -5,7 +5,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class BroadcastConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = "broadcast_room"
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = f"broadcast_{self.room_name}"
 
         # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
