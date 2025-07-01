@@ -172,6 +172,7 @@ def add_ticket(request, space_name: str):
 
 
 def rt_send_message(request):
+    """Receive a message via POST and broadcast via WebSockets to all clients."""
     if request.method == "POST":
         message_text = request.POST.get("message", "").strip()
         room_name = request.POST.get("room_name", "general")

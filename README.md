@@ -15,3 +15,5 @@ ticket.active - this one is currenly being voted on by group
 ticket.closed - moderator has closed ticket, usually after everyone voted
 ticket.archived - from last week - still in db but not shown on page at all
 
+Start daphne with
+daphne poynter.config.asgi:application

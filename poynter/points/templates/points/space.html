@@ -65,7 +65,16 @@
         const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ room_name }}');
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.getElementById('message-display').textContent = data.message;
+            if (data.type === 'html_update') {
+                // Update specific element with new HTML
+                const targetElement = document.getElementById(data.target_element);
+                if (targetElement) {
+                    targetElement.innerHTML = data.html_content;
+                }
+            } else {
+                // Handle regular text messages
+                document.getElementById('message-display').textContent = data.message;
+            }
         };
     </script>
 {% endblock extra_js %}

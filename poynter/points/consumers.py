@@ -19,7 +19,24 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def broadcast_message(self, event):
+        """Simple text message"""
         message = event["message"]
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message}))
+
+    async def broadcast_html_update(self, event):
+        """Output of HTMX-generating view that designates what part of page to render to."""
+        html_content = event["html_content"]
+        target_element = event["target_element"]
+
+        # Send HTML update to WebSocket
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "html_update",
+                    "html_content": html_content,
+                    "target_element": target_element,
+                }
+            )
+        )
