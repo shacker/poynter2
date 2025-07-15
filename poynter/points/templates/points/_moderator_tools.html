@@ -1,4 +1,3 @@
-{% if user == space.moderator %}
 
 
 <div class="col-lg-9">
@@ -14,6 +13,20 @@
                         <th>Action</th>
                         <th>Note</th>
                     </tr>
+
+
+
+                        {# Add a ticket #}
+                        {% if active_ticket %}
+                            <tr>
+                                <td>
+                                <a href="{% url 'points:add_ticket' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                                    Add a ticket
+                                </a>
+                                </td>
+                                <td></td>
+                            </tr>
+                        {% endif %}
 
                         {# Open/close active ticket #}
                         {% if active_ticket %}
@@ -34,7 +47,7 @@
                         <tr>
                             <td>
                                 <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                                    {% if space.is_open %}Close{% else %}Open{% endif %} Voting
+                                    {% if space.is_open %}Close{% else %}Open{% endif %} voting space
                                 </a>
                             </td>
                             <td>
@@ -89,5 +102,3 @@
 
     {# Debug: Uncomment to see all votes in this space #}
     {# <pre>{{tallies}}</pre> #}
-
-{% endif %}

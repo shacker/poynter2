@@ -37,9 +37,6 @@
                     </tr>
                 {% endfor %}
             </table>
-            {% if user == space.moderator %}
-                <a href="{% url 'points:add_ticket' space.slug %}">&rarr; Add a ticket</a>
-            {% endif %}
 
         </div>
     </div>

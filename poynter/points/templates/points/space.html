@@ -50,9 +50,11 @@
             </div>
         </div>
 
-        <div class="row mt-4">
-            {% include "points/_moderator_tools.html" %}
-        </div>
+        {% if user == space.moderator %}
+            <div class="row mt-4">
+                {% include "points/_moderator_tools.html" %}
+            </div>
+        {% endif %}
 
     </div>
 
