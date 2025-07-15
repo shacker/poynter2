@@ -170,6 +170,7 @@ django==5.1.4 \
     #   django-crispy-forms
     #   django-extensions
     #   django-redis
+    #   django-require-login
     #   django-ses
     #   django-storages
     #   django-webserver
@@ -197,6 +198,10 @@ django-jsoneditor==0.2.4 \
 django-redis==5.4.0 \
     --hash=sha256:6a02abaa34b0fea8bf9b707d2c363ab6adc7409950b2db93602e6cb292818c42 \
     --hash=sha256:ebc88df7da810732e2af9987f7f426c96204bf89319df4c6da6ca9a2942edd5b
+    # via -r ./requirements/base.in
+django-require-login==1.1.4 \
+    --hash=sha256:0320128ace94561afbca3f3580bce6df4b8a90ba20313b43971bc26ed2e4cce0 \
+    --hash=sha256:71e2e85c6148985afa2cc8a52afa9e3a0ec3f77bb6766d4d9c618529e43f7856
     # via -r ./requirements/base.in
 django-ses==4.3.2 \
     --hash=sha256:4440847259b3a5a1d33c02467dacbe23d12b8105e04a4c17dba38110f4bfae77 \

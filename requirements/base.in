@@ -9,6 +9,7 @@ django-crispy-forms
 django-extensions
 django-jsoneditor
 django-redis
+django-require-login
 django-ses
 django-storages
 django-webserver[pyuwsgi]
