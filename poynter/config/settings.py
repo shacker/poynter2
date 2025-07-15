@@ -70,6 +70,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # django-allauth:
     "allauth.account.middleware.AccountMiddleware",
+    # login-required
+    "django_require_login.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "poynter.config.urls"
@@ -191,8 +193,11 @@ else:
     MEDIA_URL = "/media/"
 
 
-LOGIN_REDIRECT_URL = "points_home"
+# All views protected or allowed by require-login:
+# https://pypi.org/project/django-require-login/
+LOGIN_URL = "account_login"
 LOGOUT_REDIRECT_URL = "account_login"
+REQUIRE_LOGIN_PUBLIC_NAMED_URLS = (LOGIN_URL, LOGOUT_REDIRECT_URL)
 
 
 # Use Redis caching if enabled for this project; else db caching
