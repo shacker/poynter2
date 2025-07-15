@@ -7,7 +7,6 @@
             <table class="table">
                 <tr>
                     <th>Title</th>
-                    <th>Closed</th>
                     {% if user == space.moderator %}
                         <th>Open/Close</th>
                         <th>Make Active</th>
@@ -20,7 +19,7 @@
                                 {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                             </a>
                         </td>
-                        <td>{% if ticket.closed %}<i class="bi bi-bag-check"></i>{% endif %}</td>
+
                         {% if user == space.moderator %}
                             <td>
                                 <a href="{% url 'points:open_close_ticket' ticket.id %}" >

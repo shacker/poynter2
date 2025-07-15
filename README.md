@@ -15,3 +15,5 @@ ticket.active - this one is currenly being voted on by group
 ticket.closed - moderator has closed ticket, usually after everyone voted
 ticket.archived - from last week - still in db but not shown on page at all
 
+
+User joins each session to which they sometimes contribute. If a user appears in Voting Members but is not present one day, the moderator can remove them, and user can re-join next time they're available.

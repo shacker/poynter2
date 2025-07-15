@@ -117,12 +117,12 @@ def open_close_space(request, space_name: str):
 
 def archive_tickets(request, space_name: str):
     """When next week's voting comes, we need to get old tickets out of the way.
-    Set those to archived=True (different from closed).
+    Set those to archived=True (different from closed). Archived tickets cannot be active.
     """
 
     space = get_object_or_404(Space, slug=space_name)
     tickets = Ticket.objects.filter(space=space, archived=False)
-    tickets.update(archived=True)
+    tickets.update(archived=True, active=False)
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 
