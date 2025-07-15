@@ -8,7 +8,7 @@ from .models import Project, Snapshot, Space, Ticket
 
 class TicketAdmin(admin.ModelAdmin):
     form = TicketForm
-    list_display = ("title", "active", "space", "created")
+    list_display = ("title", "active", "archived", "space", "created")
 
 
 class SpaceAdmin(admin.ModelAdmin):
