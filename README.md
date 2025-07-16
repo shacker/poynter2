@@ -44,6 +44,7 @@ daphne poynter.config.asgi:application
 
 - When you are ready to wipe the slate clean and prepare for the next voting session click Archive Current Tickets for a fresh start. Archived tickets will be saved, but not displayed on the voting board.
 
+- You can manually open or close a single ticket as needed.
 
 
 
