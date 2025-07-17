@@ -1,7 +1,7 @@
 {% if space.ticket_set.all %}
     <div class="card w-100 mt-4">
         <div class="card-header">
-            <b>Tickets for {{ space.slug }} {% if not space.is_open %}(voting closed){% endif %}</b>
+            <b>Tickets in {{ space.slug }} {% if not space.is_open %}(voting closed){% endif %}</b>
         </div>
         <div class="card-body">
             <table class="table">
