@@ -13,8 +13,7 @@ from poynter.points.ops import get_votes_for_space
 def home(request):
     "List spaces - projects and their pointing moderators"
     projects = Project.objects.all()
-    open_spaces = Space.objects.filter(is_open=True)
-    return render(request, "points/home.html", {"projects": projects, "open_spaces": open_spaces})
+    return render(request, "points/home.html", {"projects": projects})
 
 
 def space(request, space_name: str):

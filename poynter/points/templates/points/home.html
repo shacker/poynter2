@@ -7,27 +7,13 @@
     {% if user.is_authenticated %}
     <h2>Pointing Spaces</h2>
 
-    <div class="text-muted mb-4">
-        {% if open_spaces %}
-            Click open door to enter a voting space.
-        {% else %}
-            No spaces are currently open for voting.
-        {% endif %}
-    </div>
 
-    <table class="table">
-        <thead>
-            <tr class="d-flex">
-                <th scope="col" class="col-2">Project</th>
-                <th scope="col" class="col-2">Moderator</th>
-                <th scope="col" class="col-2">Space</th>
-            </tr>
-        </thead>
+    <table class="table mt-4">
+
         {% for project in projects %}
             {% if project.space_set.all %}
                 <tr class="d-flex table-light">
                     <td class="col-2"><b>{{ project }}</b></td>
-                    <td class="col-2"></td>
                     <td class="col-2"></td>
                 </tr>
             {% endif %}
@@ -35,18 +21,8 @@
                     <tr class="d-flex">
                         <td class="col-2"></td>
                         <td class="col-2">
-                            <b>{{ space.moderator }}</b>
-                        </td>
-                        <td class="col-2">
-                            <p class="fs-4">
-                                {% if space.is_open %}
-                                    <a href="{% url 'points:space' space.slug %}">
-                                        <i class="bi bi-door-open"></i>
-                                    </a>
-                                {% else %}
-                                    <i class="bi bi-door-closed"></i>
-                                {% endif %}
-                            </p>
+                            <a href="{% url 'points:space' space.slug %}"><b>{{ space.moderator }}</b></a>
+                            <i class="bi {% if space.is_open %}bi-door-open{% else %}bi-door-closed{% endif %}"></i>
                         </td>
                     </tr>
                 {% endfor %}

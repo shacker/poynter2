@@ -30,6 +30,7 @@ class Space(TimeStampedModel):
         settings.AUTH_USER_MODEL,
         help_text="Users who have joined this space.",
         related_name="members",
+        blank=True,
     )
 
     def __str__(self):
