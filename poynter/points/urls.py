@@ -22,6 +22,8 @@ urlpatterns = [
         name="open_close_ticket",
     ),
     path("space/<str:space_name>", views.space, name="space"),
+    # HTMX views
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
+    path("ticket_table/<str:space_name>", views_htmx.ticket_table, name="ticket_table"),
     path("rt_send/", views.rt_send_message, name="rt_send_message"),
 ]

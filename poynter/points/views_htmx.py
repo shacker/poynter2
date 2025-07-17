@@ -2,6 +2,9 @@ from collections import defaultdict
 
 from django.core.cache import cache
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+
+from poynter.points.models import Space
 
 
 def tally_single(request):
@@ -44,3 +47,14 @@ def tally_single(request):
         cache.set(space_name, data, 3600)
 
     return HttpResponse(status=204)  # Do nothing
+
+
+def ticket_table(request, space_name: str):
+    "HTMX view returns appropriate ticket list for given user in this space."
+    "Updates in real time as moderator makes changes."
+
+    space = get_object_or_404(Space, slug=space_name)
+    current_tickets = space.ticket_set.filter(archived=False)
+    ctx = {"space": space, "current_tickets": current_tickets}
+
+    return render(request, "points/_ticket_table.html", ctx)
