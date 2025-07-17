@@ -48,3 +48,4 @@ daphne poynter.config.asgi:application
 
 
 
+Note: While a moderator is techically a "member" of a space, only users who have specifically joined a space can vote. This way, moderators can decide on a per-space basis whether they should also be allowed to vote.
