@@ -17,16 +17,14 @@
 
 
                         {# Add a ticket #}
-                        {% if active_ticket %}
-                            <tr>
-                                <td>
-                                <a href="{% url 'points:add_ticket' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                                    Add a ticket
-                                </a>
-                                </td>
-                                <td></td>
-                            </tr>
-                        {% endif %}
+                        <tr>
+                            <td>
+                            <a href="{% url 'points:add_ticket' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                                Add a ticket
+                            </a>
+                            </td>
+                            <td></td>
+                        </tr>
 
                         {# Open/close active ticket #}
                         {% if active_ticket %}
@@ -51,7 +49,7 @@
                                 </a>
                             </td>
                             <td>
-                                Turn on/off voting capability for members. Vote tally snapshot is auto-saved on close.
+                                Turn voting on or off for all members. Vote tally snapshot is auto-saved on close.
                             </td>
                         </tr>
 
@@ -74,9 +72,13 @@
                                     <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot selected users"/>
                                 </td>
                                 <td>
-                                    {% for username in space.members.all %}
-                                        <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
-                                    {% endfor %}
+                                    {% if space.members.all %}
+                                        {% for username in space.members.all %}
+                                            <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+                                        {% endfor %}
+                                    {% else %}
+                                        No members have joined
+                                    {% endif %}
                                 </td>
                             </tr>
                         </form>
