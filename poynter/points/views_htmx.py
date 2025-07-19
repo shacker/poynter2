@@ -78,6 +78,17 @@ def display_ticket_table(request, space_name: str):
     return render(request, "points/_display_ticket_table.html", ctx)
 
 
+def display_ticket_control(request, space_name: str):
+    "Display ticket table control links for moderator only."
+    "These controls rendered in a separate table to avoid complex "
+    "content filtering (permissions) over async broadcast."
+    space = get_object_or_404(Space, slug=space_name)
+    current_tickets = space.ticket_set.filter(archived=False)
+    ctx = {"space": space, "current_tickets": current_tickets}
+
+    return render(request, "points/_display_ticket_control.html", ctx)
+
+
 def display_active_ticket(request, space_name: str):
     """HTMX view displays linked ticket currently being voted on.
     Dynamic since it needs to be updated independently when
@@ -120,13 +131,27 @@ def activate_ticket(request, space_name: str, ticket_id: int):
         },
     )
 
-    # Refresh ticket_table with the output of its standalone view
+    return HttpResponse(status=204)
+
+
+def open_close_ticket(request, ticket_id: int):
+    "Allow moderator to open or close a ticket in a space. Simple toggle."
+
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket.closed = not ticket.closed
+    if ticket.closed:
+        ticket.active = False
+    ticket.save()
+
+    # Refresh ticket table with output of that standalone view
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
-        f"broadcast_{space.slug}",
+        f"broadcast_{ticket.space.slug}",
         {
             "type": "broadcast_html_update",
-            "html_content": display_ticket_table(request, space_name).content.decode("utf-8"),
+            "html_content": display_ticket_table(request, ticket.space.slug).content.decode(
+                "utf-8"
+            ),
             "target_element": "display_ticket_table",
         },
     )

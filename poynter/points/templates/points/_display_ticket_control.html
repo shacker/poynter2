@@ -1,0 +1,42 @@
+{# Moderator-only panel turns tickets on/off, active/inactive #}
+
+{% if space.ticket_set.all %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <b>Ticket Control</b>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    {% if user == space.moderator %}
+                        <th>±Open</th>
+                        <th>±Active</th>
+                    {% endif %}
+                </tr>
+                {% for ticket in current_tickets %}
+                    <tr>
+                        <td>
+                          {{ ticket.id }}
+                        </td>
+                        <td>
+                            <a href="{% url 'points:open_close_ticket' ticket.id %}" >
+                                <i class="bi bi-app-indicator"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
+                                <i class="bi bi-battery-charging"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    </div>
+
+{% else %}
+    There are no tickets to be pointed.
+{% endif %}

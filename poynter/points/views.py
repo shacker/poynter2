@@ -78,19 +78,6 @@ def join_leave_space(request, space_name: str):
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 
 
-def open_close_ticket(request, ticket_id: int):
-    "Allow moderator to open or close a ticket in a space. Simple toggle."
-
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    space = ticket.space
-    ticket.closed = not ticket.closed
-    if ticket.closed:
-        ticket.active = False
-    ticket.save()
-
-    return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
-
-
 def open_close_space(request, space_name: str):
     """Allow moderator to open or close a space for voting. Simple toggle.
     Closing a space also auto-saves a snapshot of vote state for posterity.

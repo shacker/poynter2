@@ -58,3 +58,19 @@ There are three real-time htmx views in this project:
     (we actually have to update two things: The list of tickets AND the "Active Ticket" display)
 3) When any member votes, the view of who has voted changes for everyone
 
+
+### Shared content and the broadcast model
+
+Traditional: I see what I see because I click what I click
+Channels: We all see the same thing because a moderator e.g. made a change for everyone, or someone typed into a chat and we all see it.
+What we can't do: A channel update is sent but each recipient gets different content, e.g. based on permssions.
+
+We initially enabled a "unicast" approach that would hand the request off to each user of a space, but turned it off due to complexities and the fact that for a popular space, it would spike the query count and potentially cause delays. Hence the separate "Ticket Control" panel for moderators.
+
+### Ticket Control Panel
+
+Moderators only see this panel:
+
+[screenshot]
+
+which allows them to quickly turn tickets on or off from this session, and make any ticket the currently active ticket. This is a separate panel to avoid needing complex solutions for filtering content and permissions inside the broadcast model.

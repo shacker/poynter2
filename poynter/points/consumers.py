@@ -26,7 +26,7 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"message": message}))
 
     async def broadcast_html_update(self, event):
-        """Output of HTMX-generating view that designates what part of page to render to."""
+        """Broadcast pre-rendered HTML to all users of the space."""
         html_content = event["html_content"]
         target_element = event["target_element"]
 

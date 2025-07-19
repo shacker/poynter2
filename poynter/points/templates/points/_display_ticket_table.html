@@ -1,5 +1,6 @@
+{# shared ticket table same for all members of a space #}
 {% if space.ticket_set.all %}
-    <div class="card w-100 mt-4">
+    <div class="card mt-4">
         <div class="card-header">
             <b>Tickets in {{ space.slug }} {% if not space.is_open %}(voting closed){% endif %}</b>
         </div>
@@ -7,10 +8,6 @@
             <table class="table">
                 <tr>
                     <th>Title</th>
-                    {% if user == space.moderator %}
-                        <th>Open/Close</th>
-                        <th>Make Active</th>
-                    {% endif %}
                 </tr>
                 {% for ticket in current_tickets %}
                     <tr>
@@ -19,25 +16,9 @@
                                 {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                             </a>
                         </td>
-
-                        {% if user == space.moderator %}
-                            <td>
-                                <a href="{% url 'points:open_close_ticket' ticket.id %}" >
-                                    <i class="bi bi-app-indicator"></i>
-                                </a>
-                            </td>
-                            <td>
-                                {% if not ticket.active and not ticket.closed %}
-                                    <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
-                                        <i class="bi bi-battery-charging"></i>
-                                    </a>
-                                {% endif %}
-                            </td>
-                        {% endif %}
                     </tr>
                 {% endfor %}
             </table>
-
         </div>
     </div>
 

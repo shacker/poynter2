@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col">
+                    <div class="{% if user == space.moderator %}col-lg-9{% else %}col-lg-12{% endif %}">
                         {# ticket_table loaded and updated via htmx #}
                         <div
                             hx-get="{% url 'points:display_ticket_table' space.slug %}"
@@ -50,8 +50,19 @@
                             id="display_ticket_table">
                         </div>
                     </div>
-                </div>
 
+                    {% if user == space.moderator %}
+                        <div class="col-lg-3">
+                            {# moderator ticket control table loaded and updated via htmx #}
+                            <div
+                                hx-get="{% url 'points:display_ticket_control' space.slug %}"
+                                hx-trigger="load"
+                                class="display_ticket_control"
+                                id="display_ticket_control">
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="col-lg-3">
@@ -91,4 +102,3 @@
         };
     </script>
 {% endblock extra_js %}
-
