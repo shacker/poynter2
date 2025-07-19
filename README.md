@@ -49,3 +49,12 @@ daphne poynter.config.asgi:application
 
 
 Note: While a moderator is techically a "member" of a space, only users who have specifically joined a space can vote. This way, moderators can decide on a per-space basis whether they should also be allowed to vote.
+
+
+There are three real-time htmx views in this project:
+
+1) Moderator can send a text message alert to everyone in a space (room)
+2) When moderator upates the tickets list, it's updated for all watchers in that space
+    (we actually have to update two things: The list of tickets AND the "Active Ticket" display)
+3) When any member votes, the view of who has voted changes for everyone
+

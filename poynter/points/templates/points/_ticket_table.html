@@ -27,7 +27,7 @@
                                 </a>
                             </td>
                             <td>
-                                {% if not ticket.active %}
+                                {% if not ticket.active and not ticket.closed %}
                                     <a href="{% url 'points:activate_ticket' space.slug ticket.id %}" >
                                         <i class="bi bi-battery-charging"></i>
                                     </a>

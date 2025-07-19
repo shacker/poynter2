@@ -95,7 +95,7 @@
                             </td>
                         </tr>
 
-                        {# Message all users #}
+                        {# Send message to all users #}
                         <form hx-post="{% url 'points:rt_send_message' %}"
                             hx-swap="none"
                             hx-on::after-request="this.reset()"

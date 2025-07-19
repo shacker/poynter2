@@ -1,7 +1,7 @@
 {% if space.is_open %}
     {% if active_ticket %}
 
-        <h3>Voting on: <a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
+        <h4>Voting on:<br /><a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
 
         {% if user in space.members.all %}
         <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">
@@ -30,7 +30,7 @@
             {% endfor %}
         </form>
         {% else %}
-            You are not a voting member - join space to vote here.
+            You are not a voting member - join space to vote.
         {% endif %}
 
     {% else %}

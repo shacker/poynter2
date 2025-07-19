@@ -83,6 +83,8 @@ def open_close_ticket(request, ticket_id: int):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     space = ticket.space
     ticket.closed = not ticket.closed
+    if ticket.closed:
+        ticket.active = False
     ticket.save()
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
@@ -177,8 +179,6 @@ def rt_send_message(request):
         room_name = request.POST.get("room_name", "general")
 
         if message_text:
-
-            # Broadcast to all connected clients
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"broadcast_{room_name}", {"type": "broadcast_message", "message": message_text}
