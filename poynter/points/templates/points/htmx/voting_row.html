@@ -1,8 +1,14 @@
 {% if space.is_open %}
     {% if active_ticket %}
 
-        {# ticket_table loaded and updated via htmx #}
-        <div hx-get="{% url 'points:display_active_ticket' space.slug %}" hx-trigger="load"></div>
+        {# display_active_ticket loaded and updated via htmx for independent updates #}
+        <div
+            hx-get="{% url 'points:display_active_ticket' space.slug %}"
+            hx-trigger="load"
+            class="display_active_ticket"
+            id="display_active_ticket">
+        </div>
+
 
         {% if user in space.members.all %}
         <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">

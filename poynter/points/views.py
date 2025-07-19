@@ -22,6 +22,7 @@ def space(request, space_name: str):
     numbers = [(1, "One"), (2, "Two"), (3, "Three"), (5, "Five"), (8, "Eight"), (13, "Thirteen")]
     room_name = space.slug
 
+    # Can we remove this?
     try:
         active_ticket = space.ticket_set.get(active=True)
     except Ticket.DoesNotExist:
@@ -85,21 +86,6 @@ def open_close_ticket(request, ticket_id: int):
     ticket.closed = not ticket.closed
     if ticket.closed:
         ticket.active = False
-    ticket.save()
-
-    return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
-
-
-def activate_ticket(request, space_name: str, ticket_id: int):
-    """Allow moderator to make a ticket active in a space. Simple toggle.
-    Must set other active tickets to null first.
-    """
-
-    space = get_object_or_404(Space, slug=space_name)
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    space.ticket_set.all().update(active=None)
-    ticket.active = True
-    ticket.closed = False
     ticket.save()
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
@@ -170,19 +156,3 @@ def add_ticket(request, space_name: str):
         form = AddTicketForm()
 
     return render(request, "points/add_ticket.html", {"form": form, "space_name": space_name})
-
-
-def rt_send_message(request):
-    """Receive a message via POST and broadcast via WebSockets to all clients."""
-    if request.method == "POST":
-        message_text = request.POST.get("message", "").strip()
-        room_name = request.POST.get("room_name", "general")
-
-        if message_text:
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"broadcast_{room_name}", {"type": "broadcast_message", "message": message_text}
-            )
-
-    # Return empty response for HTMX
-    return HttpResponse("")

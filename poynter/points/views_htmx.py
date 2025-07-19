@@ -1,10 +1,29 @@
 from collections import defaultdict
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from poynter.points.models import Space, Ticket
+
+
+def rt_send_message(request):
+    """Receive a message via POST and broadcast via WebSockets to all clients."""
+    if request.method == "POST":
+        message_text = request.POST.get("message", "").strip()
+        # TODO replace room_name with space_name everywhere
+        room_name = request.POST.get("room_name", "general")
+
+        if message_text:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"broadcast_{room_name}", {"type": "broadcast_message", "message": message_text}
+            )
+
+    # Return empty response for HTMX
+    return HttpResponse(status=204)  # Do nothing
 
 
 def tally_single(request):
@@ -75,3 +94,32 @@ def display_active_ticket(request, space_name: str):
     return render(
         request, "points/htmx/display_active_ticket.html", {"active_ticket": active_ticket}
     )
+
+
+def activate_ticket(request, space_name: str, ticket_id: int):
+    """Allow moderator to make a ticket active in a space.
+    Must set other active tickets to null first. After db is updated,
+    also update active ticket display for all other members in this space.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    space.ticket_set.all().update(active=None)
+    ticket.active = True
+    ticket.closed = False
+    ticket.save()
+
+    # Refresh active ticket display with the output of that standalone view
+    html_content = display_active_ticket(request, space_name)
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"broadcast_{space.slug}",
+        {
+            "type": "broadcast_html_update",
+            "html_content": html_content.content.decode("utf-8"),
+            "target_element": "display_active_ticket",
+        },
+    )
+
+    return HttpResponse(status=204)  # Do nothing

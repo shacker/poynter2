@@ -6,11 +6,6 @@ app_name = "points"
 
 urlpatterns = [
     path("add_ticket/<str:space_name>", views.add_ticket, name="add_ticket"),
-    path(
-        "activate_ticket/<str:space_name>/<int:ticket_id>",
-        views.activate_ticket,
-        name="activate_ticket",
-    ),
     path("archive_tickets/<str:space_name>", views.archive_tickets, name="archive_tickets"),
     path("boot_users/<str:space_name>", views.boot_users, name="boot_users"),
     path("clear_space_cache/<str:space_name>", views.clear_space_cache, name="clear_space_cache"),
@@ -30,5 +25,10 @@ urlpatterns = [
         views_htmx.display_active_ticket,
         name="display_active_ticket",
     ),
-    path("rt_send/", views.rt_send_message, name="rt_send_message"),
+    path("rt_send/", views_htmx.rt_send_message, name="rt_send_message"),
+    path(
+        "activate_ticket/<str:space_name>/<int:ticket_id>",
+        views_htmx.activate_ticket,
+        name="activate_ticket",
+    ),
 ]
