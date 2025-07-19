@@ -95,7 +95,27 @@
                             </td>
                         </tr>
 
-
+                        {# Message all users #}
+                        <form hx-post="{% url 'points:rt_send_message' %}"
+                            hx-swap="none"
+                            hx-on::after-request="this.reset()"
+                        >
+                            {% csrf_token %}
+                            <tr>
+                                <td>
+                                    <button type="submit" class="btn btn-primary">Send to All Users</button>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="room_name" value="{{ space.slug }}">
+                                    <textarea class="form-control"
+                                        id="message"
+                                        name="message"
+                                        rows="3"
+                                        placeholder="Message all users..."
+                                        required></textarea>
+                                </td>
+                            </tr>
+                        </form>
                 </table>
             </div>
         </div>
@@ -104,3 +124,4 @@
 
     {# Debug: Uncomment to see all votes in this space #}
     {# <pre>{{tallies}}</pre> #}
+

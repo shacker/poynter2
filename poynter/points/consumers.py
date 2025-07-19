@@ -17,7 +17,7 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
         # Leave room group
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-    # Receive message from room group
+    # Receive message from room group (for demo purpose unless we )
     async def broadcast_message(self, event):
         """Simple text message"""
         message = event["message"]

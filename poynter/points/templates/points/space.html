@@ -28,6 +28,14 @@
 
                 <div class="row">
                     <div class="col">
+                        <!-- Real-time message displays here -->
+                        <div class="message-display" id="message-display">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
                         {% include "points/htmx/voting_row.html" %}
                     </div>
                 </div>
@@ -36,11 +44,6 @@
                     <div class="col">
                         {# ticket_table loaded and updated via htmx #}
                         <div hx-get="{% url 'points:ticket_table' space.slug %}" hx-trigger="load"></div>
-                    </div>
-
-                    <!-- Real-time message displays here -->
-                    <div class="message-display" id="message-display">
-                        Waiting for broadcast message...
                     </div>
                 </div>
 
@@ -64,19 +67,21 @@
 
 {% block extra_js %}
     <script>
-        // Keep in template so we can populate host into websocket URL dynamically
+        // Populate any page element with any widget contents generated via HTMX
         const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ room_name }}');
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.type === 'html_update') {
-                // Update specific element with new HTML
                 const targetElement = document.getElementById(data.target_element);
                 if (targetElement) {
                     targetElement.innerHTML = data.html_content;
                 }
             } else {
-                // Handle regular text messages
-                document.getElementById('message-display').textContent = data.message;
+                // Broadcast text message to all users, into a fixed div
+                var messageSpace = document.getElementById('message-display');
+                messageSpace.textContent = data.message;
+                messageSpace.classList.add('alert');
+                messageSpace.classList.add('alert-primary');
             }
         };
     </script>
