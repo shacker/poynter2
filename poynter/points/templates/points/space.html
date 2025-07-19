@@ -44,10 +44,10 @@
                     <div class="col">
                         {# ticket_table loaded and updated via htmx #}
                         <div
-                            hx-get="{% url 'points:ticket_table' space.slug %}"
+                            hx-get="{% url 'points:display_ticket_table' space.slug %}"
                             hx-trigger="load"
-                            class="ticket_table_display"
-                            id="ticket_table_display">
+                            class="display_ticket_table"
+                            id="display_ticket_table">
                         </div>
                     </div>
                 </div>

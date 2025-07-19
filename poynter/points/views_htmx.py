@@ -68,15 +68,14 @@ def tally_single(request):
     return HttpResponse(status=204)  # Do nothing
 
 
-def ticket_table(request, space_name: str):
+def display_ticket_table(request, space_name: str):
     "HTMX view returns appropriate ticket list for given user in this space."
     "Updates in real time as moderator makes changes."
-
     space = get_object_or_404(Space, slug=space_name)
     current_tickets = space.ticket_set.filter(archived=False)
     ctx = {"space": space, "current_tickets": current_tickets}
 
-    return render(request, "points/_ticket_table.html", ctx)
+    return render(request, "points/_display_ticket_table.html", ctx)
 
 
 def display_active_ticket(request, space_name: str):
@@ -99,7 +98,8 @@ def display_active_ticket(request, space_name: str):
 def activate_ticket(request, space_name: str, ticket_id: int):
     """Allow moderator to make a ticket active in a space.
     Must set other active tickets to null first. After db is updated,
-    also update active ticket display for all other members in this space.
+    also update active ticket display for all other members in this space,
+    AND update the ticket_table, which is a separate HTML element.
     """
 
     space = get_object_or_404(Space, slug=space_name)
@@ -110,16 +110,25 @@ def activate_ticket(request, space_name: str, ticket_id: int):
     ticket.save()
 
     # Refresh active ticket display with the output of that standalone view
-    html_content = display_active_ticket(request, space_name)
-
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         f"broadcast_{space.slug}",
         {
             "type": "broadcast_html_update",
-            "html_content": html_content.content.decode("utf-8"),
+            "html_content": display_active_ticket(request, space_name).content.decode("utf-8"),
             "target_element": "display_active_ticket",
         },
     )
 
-    return HttpResponse(status=204)  # Do nothing
+    # Refresh ticket_table with the output of its standalone view
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"broadcast_{space.slug}",
+        {
+            "type": "broadcast_html_update",
+            "html_content": display_ticket_table(request, space_name).content.decode("utf-8"),
+            "target_element": "display_ticket_table",
+        },
+    )
+
+    return HttpResponse(status=204)
