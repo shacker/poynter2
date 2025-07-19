@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from poynter.points.models import Space
+from poynter.points.models import Space, Ticket
 
 
 def tally_single(request):
@@ -58,3 +58,20 @@ def ticket_table(request, space_name: str):
     ctx = {"space": space, "current_tickets": current_tickets}
 
     return render(request, "points/_ticket_table.html", ctx)
+
+
+def display_active_ticket(request, space_name: str):
+    """HTMX view displays linked ticket currently being voted on.
+    Dynamic since it needs to be updated independently when
+    moderator changes what's active on the board.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    try:
+        active_ticket = space.ticket_set.get(active=True)
+    except Ticket.DoesNotExist:
+        active_ticket = None
+
+    return render(
+        request, "points/htmx/display_active_ticket.html", {"active_ticket": active_ticket}
+    )

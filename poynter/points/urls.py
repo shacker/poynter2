@@ -25,5 +25,10 @@ urlpatterns = [
     # HTMX views
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
     path("ticket_table/<str:space_name>", views_htmx.ticket_table, name="ticket_table"),
+    path(
+        "display_active_ticket/<str:space_name>",
+        views_htmx.display_active_ticket,
+        name="display_active_ticket",
+    ),
     path("rt_send/", views.rt_send_message, name="rt_send_message"),
 ]
