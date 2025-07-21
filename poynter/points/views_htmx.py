@@ -112,12 +112,18 @@ def display_voting_row(request, space_name: str):
     """
 
     space = get_object_or_404(Space, slug=space_name)
+    numbers = [(1, "One"), (2, "Two"), (3, "Three"), (5, "Five"), (8, "Eight"), (13, "Thirteen")]
+
     try:
         active_ticket = space.ticket_set.get(active=True)
     except Ticket.DoesNotExist:
         active_ticket = None
 
-    return render(request, "points/htmx/display_voting_row.html", {"active_ticket": active_ticket})
+    return render(
+        request,
+        "points/htmx/display_voting_row.html",
+        {"active_ticket": active_ticket, "space": space, "numbers": numbers},
+    )
 
 
 def refresh_widgets(request, ticket):
