@@ -108,4 +108,9 @@ get_votes_for_space
 Channels overview and tour of channels components
 Tour of HTMX components
 
-Talk about spaces (rooms)
+Talk about spaces (rooms). One for each project/moderator. Untested but should work!
+
+Start with global page vars, then move to widget-level vars, then pretty soon you realize those aren't being updated because you're no longer redrawing the whole page, so you have to widgetize EVERYthing.
+In for a penny, in for a pound.
+
+

@@ -44,12 +44,18 @@
                         {# Close voting in space #}
                         <tr>
                             <td>
-                                <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
-                                    {% if space.is_open %}Close{% else %}Open{% endif %} voting space
-                                </a>
+                                {% if space.is_open %}
+                                    <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-primary mt-2">
+                                        Close voting space
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'points:open_close_space' space.slug %}" class="btn btn-sm btn-danger mt-2">
+                                       Open voting space
+                                    </a>
+                                {% endif %}
                             </td>
                             <td>
-                                Turn voting on or off for all members. Vote tally snapshot is auto-saved on close.
+                                Turn voting {{ space.is_open|yesno:"OFF,ON" }} for all members. Vote tally snapshot is auto-saved on close.
                             </td>
                         </tr>
 
@@ -103,7 +109,7 @@
                             {% csrf_token %}
                             <tr>
                                 <td>
-                                    <button type="submit" class="btn btn-sm btn-primary">Send to All Users</button>
+                                    <button type="submit" class="btn btn-sm btn-primary">Message All Users</button>
                                 </td>
                                 <td>
                                     <input type="hidden" name="space_name" value="{{ space.slug }}">

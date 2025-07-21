@@ -6,7 +6,8 @@ from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from poynter.points.models import Space, Ticket
+from poynter.points.models import Space, Ticket, Snapshot
+from poynter.points.ops import get_votes_for_space
 
 
 def rt_send_message(request):
@@ -125,7 +126,7 @@ def display_voting_row(request, space_name: str):
     )
 
 
-def refresh_widgets(request, ticket):
+def refresh_widgets(request, space_name: str):
     """Helper, not a view. When moderator activates or opens/closes a ticket,
     the redraw must affect multiple widgets, in a mix of broadcast and unicast.
 
@@ -137,10 +138,10 @@ def refresh_widgets(request, ticket):
     """
 
     channel_layer = get_channel_layer()
-    channel_name = f"broadcast_{ticket.space.slug}"
+    channel_name = f"broadcast_{space_name}"
 
     for func in [display_active_ticket, display_ticket_table]:
-        html_content = func(request, ticket.space.slug)
+        html_content = func(request, space_name)
         async_to_sync(channel_layer.group_send)(
             channel_name,
             {
@@ -176,7 +177,7 @@ def activate_ticket(request, space_name: str, ticket_id: int):
         ticket.closed = False
 
     ticket.save()
-    refresh_widgets(request, ticket)
+    refresh_widgets(request, space_name)
 
     return HttpResponse(status=204)
 
@@ -192,6 +193,25 @@ def open_close_ticket(request, ticket_id: int):
         ticket.active = False
 
     ticket.save()
-    refresh_widgets(request, ticket)
+    refresh_widgets(request, ticket.space.slug)
+
+    return HttpResponse(status=204)
+
+
+def open_close_space(request, space_name: str):
+    """Allow moderator to open or close a space for voting. Simple toggle.
+    Closing a space also auto-saves a snapshot of vote state for posterity.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    space.is_open = False if space.is_open else True
+    space.save()
+
+    if not space.is_open:
+        # Get voting state (with averages) from cache
+        votes_data = get_votes_for_space(space_name)
+        Snapshot.objects.create(space=space, snapshot=votes_data)
+
+    refresh_widgets(request, space_name)
 
     return HttpResponse(status=204)
