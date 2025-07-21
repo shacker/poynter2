@@ -13,13 +13,12 @@ def rt_send_message(request):
     """Receive a message via POST and broadcast via WebSockets to all clients."""
     if request.method == "POST":
         message_text = request.POST.get("message", "").strip()
-        # TODO replace room_name with space_name everywhere
-        room_name = request.POST.get("room_name", "general")
+        space_name = request.POST.get("space_name", "general")
 
         if message_text:
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                f"broadcast_{room_name}", {"type": "broadcast_message", "message": message_text}
+                f"broadcast_{space_name}", {"type": "broadcast_message", "message": message_text}
             )
 
     # Return empty response for HTMX

@@ -16,7 +16,6 @@ def home(request):
 def space(request, space_name: str):
     "Detail view for a voting space has permanent URL for a moderator and project."
     space = get_object_or_404(Space, slug=space_name)
-    room_name = space.slug
 
     # Can we remove this?
     try:
@@ -56,7 +55,6 @@ def space(request, space_name: str):
             "space": space,
             "tallies": tallies,
             "host": request.get_host(),
-            "room_name": room_name,
         },
     )
 

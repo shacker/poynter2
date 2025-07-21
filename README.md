@@ -91,3 +91,21 @@ For example, if the code says `if user in members.space.all` you might be surpri
 </div>
 ```
 
+
+DEMO:
+
+
+Member view
+- Could start with homepage, or permanent URL
+
+Moderator view
+- Follow moderator instructions above to get set up
+Multiple users at once
+Admin tour
+Snapshots
+get_votes_for_space
+
+Channels overview and tour of channels components
+Tour of HTMX components
+
+Talk about spaces (rooms)

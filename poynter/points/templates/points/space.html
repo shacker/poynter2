@@ -98,7 +98,7 @@
 {% block extra_js %}
     <script>
         // Populate any page element with any widget contents generated via HTMX
-        const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ room_name }}');
+        const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ space.slug }}');
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.type === 'html_update') {
