@@ -44,10 +44,10 @@
                             id="display_active_ticket">
                         </div>
 
-                        {# Display voting row? #}
+                        {# Display voting row? Refresh via unicast since internal names are different for each person. #}
                         <div
                             hx-get="{% url 'points:display_voting_row' space.slug %}"
-                            hx-trigger="load"
+                            hx-trigger="load, refresh"
                             class="display_voting_row"
                             id="display_voting_row">
                         </div>
@@ -106,6 +106,10 @@
                 if (targetElement) {
                     targetElement.innerHTML = data.html_content;
                 }
+            } else if (data.type === 'unicast_update') {
+                // Trigger HTMX refresh of all elements that contain user-specific data moving through channels
+                htmx.trigger('#display_voting_row', 'refresh');
+                console.log("refreshing");
             } else {
                 // Broadcast text message to all users, into a fixed div
                 var messageSpace = document.getElementById('message-display');

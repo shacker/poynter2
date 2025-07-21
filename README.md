@@ -74,3 +74,20 @@ Moderators only see this panel:
 [screenshot]
 
 which allows them to quickly turn tickets on or off from this session, and make any ticket the currently active ticket. This is a separate panel to avoid needing complex solutions for filtering content and permissions inside the broadcast model.
+
+Explain diff bw broadcast and unicast
+For example, if the code says `if user in members.space.all` you might be surprised to find that {{user}} evaluates to the moderator's username rather than your username since the moderator last clicked the buttons that updated that widget, using the usual `broadcast` mode which gives everyone the same html in their widget. To solve this, we need to update that one via unicast - that just sends a trigger to all clients, which they can catch and update the widget via their own request. That's more expensive, but essential when dealing with individual user differences that shouldn't be cross-contaminated in code. So to make unicast work, we do two things:
+
+1)
+
+
+2) In the widget, modify the hx-trigger to be activated both on page load AND when it receives the trigger "refresh" (since we're not broadcsating to it, this is how it knows to refresh itself via the client):
+```
+<div
+    hx-get="{% url 'points:display_voting_row' space.slug %}"
+    hx-trigger="load, refresh"
+    class="display_voting_row"
+    id="display_voting_row">
+</div>
+```
+

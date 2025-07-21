@@ -40,3 +40,19 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
+
+    async def unicast_html_update(self, event):
+        """Some data moving through channels should NOT be shared by all users -
+        for unicast data, we just send a trigger and ask the client to do the refresh.
+        Unlike broadcast, the html_content and target_element are not sent from here,
+        as they're not needed.
+        """
+
+        # Send HTML update to WebSocket
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "unicast_update",
+                }
+            )
+        )
