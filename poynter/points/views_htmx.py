@@ -74,7 +74,7 @@ def display_ticket_table(request, space_name: str):
     current_tickets = space.ticket_set.filter(archived=False)
     ctx = {"space": space, "current_tickets": current_tickets}
 
-    return render(request, "points/_display_ticket_table.html", ctx)
+    return render(request, "points/htmx/display_ticket_table.html", ctx)
 
 
 def display_ticket_control(request, space_name: str):
@@ -85,7 +85,7 @@ def display_ticket_control(request, space_name: str):
     current_tickets = space.ticket_set.filter(archived=False)
     ctx = {"space": space, "current_tickets": current_tickets}
 
-    return render(request, "points/_display_ticket_control.html", ctx)
+    return render(request, "points/htmx/display_ticket_control.html", ctx)
 
 
 def display_active_ticket(request, space_name: str):
@@ -106,8 +106,8 @@ def display_active_ticket(request, space_name: str):
 
 
 def display_voting_row(request, space_name: str):
-    """HTMX view displays voting buttons. Should not be displayed
-    when there is no active ticket.
+    """HTMX view displays voting buttons to voting members
+    when space is open and an active ticket exists.
     """
 
     space = get_object_or_404(Space, slug=space_name)

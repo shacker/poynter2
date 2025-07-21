@@ -80,13 +80,13 @@
             </div>
 
             <div class="col-lg-3">
-                {% include "points/_members_col.html" %}
+                {% include "points/htmx/members_col.html" %}
             </div>
         </div>
 
         {% if user == space.moderator %}
             <div class="row mt-4">
-                {% include "points/_moderator_tools.html" %}
+                {% include "points/partial/moderator_tools.html" %}
             </div>
         {% endif %}
 
