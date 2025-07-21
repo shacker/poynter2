@@ -29,6 +29,11 @@ urlpatterns = [
         views_htmx.display_active_ticket,
         name="display_active_ticket",
     ),
+    path(
+        "display_voting_row/<str:space_name>",
+        views_htmx.display_voting_row,
+        name="display_voting_row",
+    ),
     path("rt_send/", views_htmx.rt_send_message, name="rt_send_message"),
     path(
         "activate_ticket/<str:space_name>/<int:ticket_id>",

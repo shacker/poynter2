@@ -34,8 +34,6 @@
                     </div>
                 </div>
 
-
-
                 <div class="row">
                     <div class="col">
                         {# Display active ticket, linked #}
@@ -46,8 +44,13 @@
                             id="display_active_ticket">
                         </div>
 
-                        {# voting_row is not shared code - votes are associated with requesting users #}
-                        {% include "points/htmx/voting_row.html" %}
+                        {# Display voting row? #}
+                        <div
+                            hx-get="{% url 'points:display_voting_row' space.slug %}"
+                            hx-trigger="load"
+                            class="display_voting_row"
+                            id="display_voting_row">
+                        </div>
                     </div>
                 </div>
 

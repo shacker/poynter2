@@ -106,6 +106,20 @@ def display_active_ticket(request, space_name: str):
     )
 
 
+def display_voting_row(request, space_name: str):
+    """HTMX view displays voting buttons. Should not be displayed
+    when there is no active ticket.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    try:
+        active_ticket = space.ticket_set.get(active=True)
+    except Ticket.DoesNotExist:
+        active_ticket = None
+
+    return render(request, "points/htmx/display_voting_row.html", {"active_ticket": active_ticket})
+
+
 def refresh_widgets(request, ticket):
     """Helper, not a view. When moderator actives or opens/closes a ticket,
     redraw affected multiple widgets."""
@@ -148,10 +162,12 @@ def activate_ticket(request, space_name: str, ticket_id: int):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     space.ticket_set.all().update(active=None)
     ticket.active = not ticket.active
-    # if ticket.active:
-    #     ticket.closed = False
-    ticket.save()
 
+    # Prevent logical impossibility
+    if ticket.active:
+        ticket.closed = False
+
+    ticket.save()
     refresh_widgets(request, ticket)
 
     return HttpResponse(status=204)
@@ -162,10 +178,12 @@ def open_close_ticket(request, ticket_id: int):
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket.closed = not ticket.closed
-    # if ticket.closed:
-    #     ticket.active = False
-    ticket.save()
 
+    # Prevent logical impossibility:
+    if ticket.closed:
+        ticket.active = False
+
+    ticket.save()
     refresh_widgets(request, ticket)
 
     return HttpResponse(status=204)
