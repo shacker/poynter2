@@ -1,4 +1,6 @@
 {% if active_ticket and space.is_open %}
+{{space.members.all}}
+{{ user  }}
     {% if user in space.members.all %}
         <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">
             <input type="hidden" name="space" value="{{ space.slug }}">

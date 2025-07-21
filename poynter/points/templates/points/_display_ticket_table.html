@@ -6,16 +6,12 @@
         </div>
         <div class="card-body">
             <table class="table">
-                <tr>
-                    <th>Title</th>
-                </tr>
                 {% for ticket in current_tickets %}
                     <tr>
                         <td>
                             <a href="{{ ticket.url }}" target="_blank">
                                 {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                             </a>
-                            {% if ticket.active %}(A){% endif %}
                         </td>
                     </tr>
                 {% endfor %}

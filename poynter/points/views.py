@@ -1,8 +1,5 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from poynter.points.forms import AddTicketForm

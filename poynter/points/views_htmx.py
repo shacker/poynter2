@@ -134,7 +134,7 @@ def refresh_widgets(request, ticket):
     i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
     """
 
-    func_elems_to_update = [display_active_ticket, display_ticket_table]
+    func_elems_to_update = [display_active_ticket, display_voting_row, display_ticket_table]
 
     channel_layer = get_channel_layer()
     for func in func_elems_to_update:
