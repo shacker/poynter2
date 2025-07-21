@@ -121,34 +121,25 @@ def display_voting_row(request, space_name: str):
 
 
 def refresh_widgets(request, ticket):
-    """Helper, not a view. When moderator actives or opens/closes a ticket,
-    redraw affected multiple widgets."""
+    """Helper, not a view. When moderator activates or opens/closes a ticket,
+    the redraw must affect multiple widgets.
+
+    Note that target elements have names that match the functions that control them,
+    i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
+    """
+
+    func_elems_to_update = [display_active_ticket, display_ticket_table]
 
     channel_layer = get_channel_layer()
-
-    # Refresh active ticket display
-    async_to_sync(channel_layer.group_send)(
-        f"broadcast_{ticket.space.slug}",
-        {
-            "type": "broadcast_html_update",
-            "html_content": display_active_ticket(request, ticket.space.slug).content.decode(
-                "utf-8"
-            ),
-            "target_element": "display_active_ticket",
-        },
-    )
-
-    # Refresh ticket_table
-    async_to_sync(channel_layer.group_send)(
-        f"broadcast_{ticket.space.slug}",
-        {
-            "type": "broadcast_html_update",
-            "html_content": display_ticket_table(request, ticket.space.slug).content.decode(
-                "utf-8"
-            ),
-            "target_element": "display_ticket_table",
-        },
-    )
+    for func in func_elems_to_update:
+        async_to_sync(channel_layer.group_send)(
+            f"broadcast_{ticket.space.slug}",
+            {
+                "type": "broadcast_html_update",
+                "html_content": func(request, ticket.space.slug).content.decode("utf-8"),
+                "target_element": func.__name__,
+            },
+        )
 
 
 def activate_ticket(request, space_name: str, ticket_id: int):
