@@ -15,6 +15,7 @@
                             <a href="{{ ticket.url }}" target="_blank">
                                 {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
                             </a>
+                            {% if ticket.active %}(A){% endif %}
                         </td>
                     </tr>
                 {% endfor %}

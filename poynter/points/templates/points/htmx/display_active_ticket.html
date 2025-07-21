@@ -1,1 +1,3 @@
-<h4>Voting on:<br /><a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
+{% if active_ticket %}
+    <h4>Voting on:<br /><a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
+{% endif %}

@@ -1,16 +1,6 @@
 {% if space.is_open %}
-    {% if active_ticket %}
 
-        {# display_active_ticket loaded and updated via htmx for independent updates #}
-        <div
-            hx-get="{% url 'points:display_active_ticket' space.slug %}"
-            hx-trigger="load"
-            class="display_active_ticket"
-            id="display_active_ticket">
-        </div>
-
-
-        {% if user in space.members.all %}
+    {% if user in space.members.all %}
         <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">
             <input type="hidden" name="space" value="{{ space.slug }}">
             <input type="hidden" name="username" value="{{ user.username }}">
@@ -36,11 +26,8 @@
                 </button>
             {% endfor %}
         </form>
-        {% else %}
-            You are not a voting member - join space to vote.
-        {% endif %}
-
     {% else %}
-        <b>Space {{ space.slug }} is not currently open for voting or there is no active ticket</b>
+        You are not a voting member - join space to vote.
     {% endif %}
+
 {% endif %}

@@ -106,45 +106,25 @@ def display_active_ticket(request, space_name: str):
     )
 
 
-def activate_ticket(request, space_name: str, ticket_id: int):
-    """Allow moderator to make a ticket active in a space.
-    Must set other active tickets to null first. After db is updated,
-    also update active ticket display for all other members in this space,
-    AND update the ticket_table, which is a separate HTML element.
-    """
+def refresh_widgets(request, ticket):
+    """Helper, not a view. When moderator actives or opens/closes a ticket,
+    redraw affected multiple widgets."""
 
-    space = get_object_or_404(Space, slug=space_name)
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    space.ticket_set.all().update(active=None)
-    ticket.active = True
-    ticket.closed = False
-    ticket.save()
-
-    # Refresh active ticket display with the output of that standalone view
     channel_layer = get_channel_layer()
+
+    # Refresh active ticket display
     async_to_sync(channel_layer.group_send)(
-        f"broadcast_{space.slug}",
+        f"broadcast_{ticket.space.slug}",
         {
             "type": "broadcast_html_update",
-            "html_content": display_active_ticket(request, space_name).content.decode("utf-8"),
+            "html_content": display_active_ticket(request, ticket.space.slug).content.decode(
+                "utf-8"
+            ),
             "target_element": "display_active_ticket",
         },
     )
 
-    return HttpResponse(status=204)
-
-
-def open_close_ticket(request, ticket_id: int):
-    "Allow moderator to open or close a ticket in a space. Simple toggle."
-
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    ticket.closed = not ticket.closed
-    if ticket.closed:
-        ticket.active = False
-    ticket.save()
-
-    # Refresh ticket table with output of that standalone view
-    channel_layer = get_channel_layer()
+    # Refresh ticket_table
     async_to_sync(channel_layer.group_send)(
         f"broadcast_{ticket.space.slug}",
         {
@@ -155,5 +135,37 @@ def open_close_ticket(request, ticket_id: int):
             "target_element": "display_ticket_table",
         },
     )
+
+
+def activate_ticket(request, space_name: str, ticket_id: int):
+    """Allow moderator to make a ticket active/inactive in a space.
+    Must set other active tickets to null first. After db is updated,
+    also update active ticket display for all other members in this space,
+    AND update the ticket_table, which is a separate HTML element.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    space.ticket_set.all().update(active=None)
+    ticket.active = not ticket.active
+    # if ticket.active:
+    #     ticket.closed = False
+    ticket.save()
+
+    refresh_widgets(request, ticket)
+
+    return HttpResponse(status=204)
+
+
+def open_close_ticket(request, ticket_id: int):
+    "Allow moderator to open or close a ticket in a space. Simple toggle."
+
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket.closed = not ticket.closed
+    # if ticket.closed:
+    #     ticket.active = False
+    ticket.save()
+
+    refresh_widgets(request, ticket)
 
     return HttpResponse(status=204)
