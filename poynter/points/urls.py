@@ -9,7 +9,6 @@ urlpatterns = [
     path("archive_tickets/<str:space_name>", views.archive_tickets, name="archive_tickets"),
     path("boot_users/<str:space_name>", views.boot_users, name="boot_users"),
     path("clear_space_cache/<str:space_name>", views.clear_space_cache, name="clear_space_cache"),
-    path("join_leave_space/<str:space_name>", views.join_leave_space, name="join_leave_space"),
     path("space/<str:space_name>", views.space, name="space"),
     # HTMX views
     path("tally/single/", views_htmx.tally_single, name="tally_single"),
@@ -33,6 +32,12 @@ urlpatterns = [
         views_htmx.display_voting_row,
         name="display_voting_row",
     ),
+    path(
+        "display_members/<str:space_name>",
+        views_htmx.display_members,
+        name="display_members",
+    ),
+    path("join_leave_space/<str:space_name>", views_htmx.join_leave_space, name="join_leave_space"),
     path("rt_send/", views_htmx.rt_send_message, name="rt_send_message"),
     path(
         "activate_ticket/<str:space_name>/<int:ticket_id>",

@@ -113,4 +113,6 @@ Talk about spaces (rooms). One for each project/moderator. Untested but should w
 Start with global page vars, then move to widget-level vars, then pretty soon you realize those aren't being updated because you're no longer redrawing the whole page, so you have to widgetize EVERYthing.
 In for a penny, in for a pound.
 
+Show two kinds of functions in htmx_views.py - views for partials, and helper ops that do some logic and then force a redraw of one or more widgets.
 
+Future: Demo updating just one widget, not all of them

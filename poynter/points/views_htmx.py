@@ -6,66 +6,17 @@ from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from poynter.points.models import Space, Ticket, Snapshot
+from poynter.points.models import Snapshot, Space, Ticket
 from poynter.points.ops import get_votes_for_space
 
-
-def rt_send_message(request):
-    """Receive a message via POST and broadcast via WebSockets to all clients."""
-    if request.method == "POST":
-        message_text = request.POST.get("message", "").strip()
-        space_name = request.POST.get("space_name", "general")
-
-        if message_text:
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"broadcast_{space_name}", {"type": "broadcast_message", "message": message_text}
-            )
-
-    # Return empty response for HTMX
-    return HttpResponse(status=204)  # Do nothing
-
-
-def tally_single(request):
-    """HTMX view receives POST from a voting space, and logs
-    the space name, username, and vote. All votes in a given space
-    are entered into the same shared object in redis - one per space, not
-    one per vote or one per user.
-
-    Space structure in cache is like:
-
-    {
-        8: {
-            "rob": 3,
-            "joe": 2,
-        },
-        17: {
-            "rob": 8,
-            "erin": 3,
-        }
-    }
-
-    Where 8 and 17 are ticket IDs, and within those we have usernames and
-    those users' votes.
-
-    """
-    if request.method == "POST":
-        vote = request.POST
-
-        space_name = vote.get("space")  # same as cache key
-        username = vote.get("username")
-        ticket = int(vote.get("ticket"))
-        choice = int(vote.get("number"))  # Cast numeric choice to int for mathing
-
-        # If cache for space is expired or non-existent, default to empty dict
-        # Use defaultdict as fallback so we can nest keys/vals without checking.
-        # To allow user to override their vote, we write every time.
-        # Keep space cache for one hour unless reset by moderator
-        data = cache.get(space_name, defaultdict(dict))
-        data[ticket][username] = choice
-        cache.set(space_name, data, 3600)
-
-    return HttpResponse(status=204)  # Do nothing
+"""Two kinds of functions in this module:
+- Standard HTMX "partial views" that just render HTML for one part of a view.
+    In this case, a "view" is really a partial. All of these use `return render(...)`
+- Helper functions that don't render a partial, but execute some logic and then
+    call another helper to reach out and redraw all affected widgets.
+    All of these use `return HttpResponse(status=204)` (do nothing for HTTP)
+    These could really be moved to `operations` since they're not technically views.
+"""
 
 
 def display_ticket_table(request, space_name: str):
@@ -126,36 +77,46 @@ def display_voting_row(request, space_name: str):
     )
 
 
-def refresh_widgets(request, space_name: str):
-    """Helper, not a view. When moderator activates or opens/closes a ticket,
-    the redraw must affect multiple widgets, in a mix of broadcast and unicast.
-
-    Call the broadcast widgets in prescribed order, then issue a single refresh
-    request to all unicast widgets (currently only one).
-
-    Note that target elements have names that match the functions that control them,
-    i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
+def display_members(request, space_name: str):
+    """HTMX view displays list of currently active space members
+    (and their votes to participants). tallies are stored in redis_cache
+    until voting is closed, then copied to Snapshot.
     """
 
-    channel_layer = get_channel_layer()
-    channel_name = f"broadcast_{space_name}"
+    space = get_object_or_404(Space, slug=space_name)
 
-    for func in [display_active_ticket, display_ticket_table]:
-        html_content = func(request, space_name)
-        async_to_sync(channel_layer.group_send)(
-            channel_name,
-            {
-                "type": "broadcast_html_update",
-                "html_content": html_content.content.decode("utf-8"),
-                "target_element": func.__name__,
-            },
-        )
+    try:
+        active_ticket = space.ticket_set.get(active=True)
+    except Ticket.DoesNotExist:
+        active_ticket = None
 
-    # Do not send html content or element for unicast - it will retrieve on its own
-    async_to_sync(channel_layer.group_send)(
-        channel_name,
+    # Space members and their voting status
+    # {"joe": 13, "erin": 5}
+    tallies = get_votes_for_space(space_name)
+    members = {}
+    num_voted = 0
+    if active_ticket:
+        for member in space.members.all():
+            member_vote = None
+            if member.username in tallies.get(active_ticket.id, {}).keys():
+                member_vote = tallies[active_ticket.id][member.username]
+                num_voted += 1
+            members[member] = member_vote
+    else:
+        # Still need to show members list when no active ticket
+        for member in space.members.all():
+            members[member] = None
+
+    all_voted = num_voted == space.members.count()
+
+    return render(
+        request,
+        "points/htmx/display_members.html",
         {
-            "type": "unicast_html_update",
+            "active_ticket": active_ticket,
+            "space": space,
+            "members": members,
+            "all_voted": all_voted,
         },
     )
 
@@ -215,3 +176,120 @@ def open_close_space(request, space_name: str):
     refresh_widgets(request, space_name)
 
     return HttpResponse(status=204)
+
+
+def join_leave_space(request, space_name: str):
+    "Allow member to join or leave a space. Simple toggle."
+
+    space = get_object_or_404(Space, slug=space_name)
+    if request.user in space.members.all():
+        space.members.remove(request.user)
+    else:
+        space.members.add(request.user)
+
+    refresh_widgets(request, space_name)
+
+    return HttpResponse(status=204)
+
+
+def rt_send_message(request):
+    """Receive a message via POST and broadcast via WebSockets to all clients."""
+    if request.method == "POST":
+        message_text = request.POST.get("message", "").strip()
+        space_name = request.POST.get("space_name", "general")
+
+        if message_text:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"broadcast_{space_name}", {"type": "broadcast_message", "message": message_text}
+            )
+
+    # Return empty response for HTMX
+    return HttpResponse(status=204)  # Do nothing
+
+
+def tally_single(request):
+    """HTMX view receives POST from a voting space, and logs
+    the space name, username, and vote. All votes in a given space
+    are entered into the same shared object in redis - one per space, not
+    one per vote or one per user.
+
+    Space structure in cache is like:
+
+    {
+        8: {
+            "rob": 3,
+            "joe": 2,
+        },
+        17: {
+            "rob": 8,
+            "erin": 3,
+        }
+    }
+
+    Where 8 and 17 are ticket IDs, and within those we have usernames and
+    those users' votes.
+
+    """
+    if request.method == "POST":
+        vote = request.POST
+
+        space_name = vote.get("space")  # same as cache key
+        username = vote.get("username")
+        ticket = int(vote.get("ticket"))
+        choice = int(vote.get("number"))  # Cast numeric choice to int for mathing
+
+        # If cache for space is expired or non-existent, default to empty dict
+        # Use defaultdict as fallback so we can nest keys/vals without checking.
+        # To allow user to override their vote, we write every time.
+        # Keep space cache for one hour unless reset by moderator
+        data = cache.get(space_name, defaultdict(dict))
+        data[ticket][username] = choice
+        cache.set(space_name, data, 3600)
+
+    return HttpResponse(status=204)  # Do nothing
+
+
+def refresh_widgets(request, space_name: str):
+    """Helper, not a view. When moderator activates or opens/closes a ticket,
+    the redraw must affect multiple widgets, in a mix of broadcast and unicast.
+
+    Call the broadcast widgets in prescribed order, then issue a single refresh
+    request to all unicast widgets (currently only one).
+
+    Note that target elements have names that match the functions that control them,
+    i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
+
+    TODO: We currently update all widgets when any of them change. Optimize by
+    having this function only update a list of requested widgets - all won't scale.
+    """
+
+    channel_layer = get_channel_layer()
+    channel_name = f"broadcast_{space_name}"
+
+    update_elems = {
+        "display_active_ticket": display_active_ticket,
+        "display_ticket_table": display_ticket_table,
+        "display_members": display_members,
+    }
+
+    # Call updates in sequence
+    for elem_name, handler in update_elems.items():
+        html_content = handler(request, space_name)
+        async_to_sync(channel_layer.group_send)(
+            channel_name,
+            {
+                "type": "broadcast_html_update",
+                "html_content": html_content.content.decode("utf-8"),
+                "target_element": elem_name,
+            },
+        )
+
+    # Do not send html content or element for unicast updates -
+    # all will retrieve on their own with this single call
+    async_to_sync(channel_layer.group_send)(
+        channel_name,
+        {
+            "type": "unicast_html_update",
+        },
+    )

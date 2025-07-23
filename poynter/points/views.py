@@ -23,52 +23,18 @@ def space(request, space_name: str):
     except Ticket.DoesNotExist:
         active_ticket = None
 
-    current_tickets = space.ticket_set.filter(archived=False)
-    tallies = get_votes_for_space(space_name)
-
-    # Space members and their voting status
-    # {"joe": 13, "erin": 5}
-    members = {}
-    num_voted = 0
-    if active_ticket:
-        for member in space.members.all():
-            member_vote = None
-            if member.username in tallies.get(active_ticket.id, {}).keys():
-                member_vote = tallies[active_ticket.id][member.username]
-                num_voted += 1
-            members[member] = member_vote
-    else:
-        # Still need to show members list when no active ticket
-        for member in space.members.all():
-            members[member] = None
-
-    all_voted = num_voted == space.members.count()
+    # current_tickets = space.ticket_set.filter(archived=False)
 
     return render(
         request,
         "points/space.html",
         {
             "active_ticket": active_ticket,
-            "all_voted": all_voted,
-            "current_tickets": current_tickets,
-            "members": members,
+            # "current_tickets": current_tickets,
             "space": space,
-            "tallies": tallies,
             "host": request.get_host(),
         },
     )
-
-
-def join_leave_space(request, space_name: str):
-    "Allow member to join or leave a space. Simple toggle."
-
-    space = get_object_or_404(Space, slug=space_name)
-    if request.user in space.members.all():
-        space.members.remove(request.user)
-    else:
-        space.members.add(request.user)
-
-    return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 
 
 def archive_tickets(request, space_name: str):

@@ -80,7 +80,13 @@
             </div>
 
             <div class="col-lg-3">
-                {% include "points/htmx/members_col.html" %}
+                {# show members and their votes #}
+                <div
+                    hx-get="{% url 'points:display_members' space.slug %}"
+                    hx-trigger="load"
+                    class="display_members"
+                    id="display_members">
+                </div>
             </div>
         </div>
 
