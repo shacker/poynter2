@@ -115,7 +115,6 @@
             } else if (data.type === 'unicast_update') {
                 // Trigger HTMX refresh of all elements that contain user-specific data moving through channels
                 htmx.trigger('#display_voting_row', 'refresh');
-                console.log("refreshing");
             } else {
                 // Broadcast text message to all users, into a fixed div
                 var messageSpace = document.getElementById('message-display');

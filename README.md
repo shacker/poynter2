@@ -116,3 +116,5 @@ In for a penny, in for a pound.
 Show two kinds of functions in htmx_views.py - views for partials, and helper ops that do some logic and then force a redraw of one or more widgets.
 
 Future: Demo updating just one widget, not all of them
+
+The http 204 widgets are "views" (should be ops) such as open_close_ticket or open_close_space or join_leave_space that do not represent a specific on-screen widget but affect the contents of one or more other widgets.
