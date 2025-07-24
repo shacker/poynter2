@@ -17,11 +17,9 @@ from poynter.points.views_htmx import (
 """
 - Helper functions that don't render a partial, but execute some logic and then
     call another helper to reach out and redraw all affected widgets.
-    All of these use `return HttpResponse(status=204)` (do nothing for HTTP)
-    These could really be moved to `operations` since they're not technically views.
+    These `return HttpResponse(status=204)` (do nothing for HTTP)
+    because they are called directly via http.
 """
-
-# Do these really need to return an http response at all?
 
 
 def activate_ticket(request, space_name: str, ticket_id: int):
@@ -153,11 +151,11 @@ def tally_single(request):
 
 
 def refresh_widgets(request, space_name: str):
-    """Helper, not a view. When moderator activates or opens/closes a ticket,
+    """When moderator activates or opens/closes a ticket,
     the redraw must affect multiple widgets, in a mix of broadcast and unicast.
 
     Call the broadcast widgets in prescribed order, then issue a single refresh
-    request to all unicast widgets (currently only one).
+    request to all unicast widgets.
 
     Note that target elements have names that match the functions that control them,
     i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
@@ -188,7 +186,8 @@ def refresh_widgets(request, space_name: str):
         )
 
     # Do not send html content or element for unicast updates -
-    # all will retrieve on their own with this single call
+    # all that need unicast will retrieve content on their own
+    # with this call.
     async_to_sync(channel_layer.group_send)(
         channel_name,
         {

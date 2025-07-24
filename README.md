@@ -91,6 +91,8 @@ For example, if the code says `if user in members.space.all` you might be surpri
 </div>
 ```
 
+As of now, display_voting_row is a good example of this:
+hx-trigger="load, refresh"
 
 DEMO:
 
