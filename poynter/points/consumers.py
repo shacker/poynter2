@@ -4,6 +4,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class BroadcastConsumer(AsyncWebsocketConsumer):
+    """Note two types of consumers here:
+    - broadcast_html_update() sends a block of HTML to all clients at once
+    - unicast_refresh() just sends a notice to clients that they should refresh
+        from source - they will make their own request to get new content.
+        We have settled on this approach throughout for consistency and to
+        ensure that each request.user is handled correctly in each view.
+    """
+
     async def connect(self):
         self.space_name = self.scope["url_route"]["kwargs"]["space_name"]
         self.room_group_name = f"broadcast_{self.space_name}"
@@ -41,18 +49,10 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def unicast_html_update(self, event):
-        """Some data moving through channels should NOT be shared by all users -
-        for unicast data, we just send a trigger and ask the client to do the refresh.
-        Unlike broadcast, the html_content and target_element are not sent from here,
-        as they're not needed.
+    async def unicast_refresh(self, event):
+        """Single handler for all unicast refresh triggers.
+        Event should contain 'target_id' to specify which element to refresh.
         """
-
-        # Send HTML update to WebSocket
         await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "unicast_update",
-                }
-            )
+            text_data=json.dumps({"type": "unicast_refresh", "target_id": event["target_id"]})
         )

@@ -65,7 +65,18 @@ Traditional: I see what I see because I click what I click
 Channels: We all see the same thing because a moderator e.g. made a change for everyone, or someone typed into a chat and we all see it.
 What we can't do: A channel update is sent but each recipient gets different content, e.g. based on permssions.
 
-We initially enabled a "unicast" approach that would hand the request off to each user of a space, but turned it off due to complexities and the fact that for a popular space, it would spike the query count and potentially cause delays. Hence the separate "Ticket Control" panel for moderators.
+    """ Note two types of consumers in consumers.py:
+    - broadcast_html_update() sends a block of HTML to all clients at once
+    - unicast_refresh() just sends a notice to clients that they should refresh
+        from source - they will make their own request to get new content.
+        We have settled on this approach throughout for consistency and to
+        ensure that each request.user is handled correctly in each view.
+
+
+Because we also set up a helper function to simplify the call, all you have to do for a dynamically refreshing widget is:
+- When you put the div (e.g. `display_ticket_table`) into the HTML, be sure it gets these htmx directives: `hx-trigger="load, refresh"`
+- In the view or operation that does an update, specify the widget-divs that need refreshing, e.g:
+     `refresh_unicast_widgets(space_name, ["display_ticket_table", "display_voting_row"])`
 
 ### Ticket Control Panel
 

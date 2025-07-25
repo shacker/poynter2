@@ -109,7 +109,7 @@ def rt_send_message(request):
 
 
 def tally_single(request):
-    """HTMX view receives POST from a voting space, and logs
+    """HTMX view receives POST from a voting row, and logs
     the space name, username, and vote. All votes in a given space
     are entered into the same shared object in redis - one per space, not
     one per vote or one per user.
@@ -147,6 +147,9 @@ def tally_single(request):
         data[ticket][username] = choice
         cache.set(space_name, data, 3600)
 
+    # After vote is logged, tell all clients to update their displays
+    refresh_unicast_widgets(space_name, ["display_members"])
+
     return HttpResponse(status=204)  # Do nothing
 
 
@@ -169,8 +172,7 @@ def refresh_widgets(request, space_name: str):
 
     update_elems = {
         "display_active_ticket": display_active_ticket,
-        "display_ticket_table": display_ticket_table,
-        "display_members": display_members,
+        # "display_ticket_table": display_ticket_table,
     }
 
     # Call updates in sequence
@@ -185,12 +187,17 @@ def refresh_widgets(request, space_name: str):
             },
         )
 
-    # Do not send html content or element for unicast updates -
-    # all that need unicast will retrieve content on their own
-    # with this call.
-    async_to_sync(channel_layer.group_send)(
-        channel_name,
-        {
-            "type": "unicast_html_update",
-        },
-    )
+
+def refresh_unicast_widgets(space_name: str, element_names: list = []):
+    """Called after operations require some widgets to be redrawn.
+    element_names is a list of those element names e.g.
+    refresh_unicast_widget("shacker_cosmos", ["update_voting_row","display_members"])
+    """
+
+    channel_layer = get_channel_layer()
+    channel_name = f"broadcast_{space_name}"
+
+    for elem in element_names:
+        async_to_sync(channel_layer.group_send)(
+            channel_name, {"type": "unicast_refresh", "target_id": elem}
+        )

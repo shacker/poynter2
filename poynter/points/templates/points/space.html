@@ -39,12 +39,12 @@
                         {# Display active ticket, linked #}
                         <div
                             hx-get="{% url 'points:display_active_ticket' space.slug %}"
-                            hx-trigger="load"
+                            hx-trigger="load, refresh"
                             class="display_active_ticket"
                             id="display_active_ticket">
                         </div>
 
-                        {# Display voting row? Refresh via unicast since internal names are different for each person. #}
+                        {# Display voting row. Refresh via unicast since internal names are different for each person. #}
                         <div
                             hx-get="{% url 'points:display_voting_row' space.slug %}"
                             hx-trigger="load, refresh"
@@ -59,7 +59,7 @@
                         {# ticket_table loaded and updated via htmx #}
                         <div
                             hx-get="{% url 'points:display_ticket_table' space.slug %}"
-                            hx-trigger="load"
+                            hx-trigger="load,refresh"
                             class="display_ticket_table"
                             id="display_ticket_table">
                         </div>
@@ -70,7 +70,7 @@
                             {# moderator ticket control table #}
                             <div
                                 hx-get="{% url 'points:display_ticket_control' space.slug %}"
-                                hx-trigger="load"
+                                hx-trigger="load, refresh"
                                 class="display_ticket_control"
                                 id="display_ticket_control">
                             </div>
@@ -83,7 +83,7 @@
                 {# show members and their votes #}
                 <div
                     hx-get="{% url 'points:display_members' space.slug %}"
-                    hx-trigger="load"
+                    hx-trigger="load, refresh"
                     class="display_members"
                     id="display_members">
                 </div>
@@ -107,14 +107,16 @@
         const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ space.slug }}');
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            // This data type catches HTML blocks to be force-updated for everyone
             if (data.type === 'html_update') {
                 const targetElement = document.getElementById(data.target_element);
                 if (targetElement) {
                     targetElement.innerHTML = data.html_content;
                 }
-            } else if (data.type === 'unicast_update') {
-                // Trigger HTMX refresh of all elements that contain user-specific data moving through channels
-                htmx.trigger('#display_voting_row', 'refresh');
+            // This data type catches HTML blocks to be registered for self-refresh,
+            // so all requests can properly go through user.
+            } else if (data.type === 'unicast_refresh') {
+                htmx.trigger(`#${data.target_id}`, 'refresh');
             } else {
                 // Broadcast text message to all users, into a fixed div
                 var messageSpace = document.getElementById('message-display');
@@ -125,3 +127,4 @@
         };
     </script>
 {% endblock extra_js %}
+

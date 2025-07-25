@@ -119,6 +119,8 @@ def get_votes_for_space(space_name: str) -> dict:
     to assign final average from returned value. Ticket db IDs are keys in
     this dict.
 
+    # TODO: MOve to ops?
+
     {
         8: {
             "rob": 3,

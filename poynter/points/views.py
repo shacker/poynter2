@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from poynter.points.forms import AddTicketForm
 from poynter.points.models import Project, Space, Ticket
-from poynter.points.ops import get_votes_for_space
+from poynter.points.ops import refresh_unicast_widgets
 
 
 def home(request):
@@ -73,12 +73,16 @@ def add_ticket(request, space_name: str):
     "Allow moderator to add a ticket to a space"
 
     if request.method == "POST":
-        form = AddTicketForm(request.POST)
         space = get_object_or_404(Space, slug=space_name)
+        form = AddTicketForm(request.POST)
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.space = space
             ticket.save()
+
+            # Update everyone else's display
+            refresh_unicast_widgets(space_name, ["display_ticket_table"])
+
             return redirect(reverse("points:space", kwargs={"space_name": space_name}))
 
     else:
