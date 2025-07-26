@@ -83,9 +83,7 @@
 
                         {# Boot users . n.b. forms cannot span table rows! #}
                         <tr>
-                            <td>
-                                &nbsp;
-                            </td>
+
                             <td>
                                 <form action="{% url 'points:boot_users' space.slug %}" method="get">
                                     {% for username in space.members.all %}
@@ -95,13 +93,14 @@
                                     <input class="btn btn-sm btn-primary mb-2 mt-2" type="submit" value="Boot selected users"/>
                                 </form>
                             </td>
+                            <td>
+                                Users previously joined may not be present today
+                            </td>
                         </tr>
 
                         {# Send message to all users #}
                         <tr>
-                            <td>
-                                &nbsp;
-                            </td>
+
                             <td>
                                 <form hx-post="{% url 'points:rt_send_message' %}"
                                     hx-swap="none"
@@ -117,6 +116,9 @@
                                     required></textarea>
                                     <button type="submit" class="btn btn-sm btn-primary mt-2">Message All Users</button>
                                 </form>
+                            </td>
+                            <td>
+                                &nbsp;
                             </td>
                         </tr>
 
