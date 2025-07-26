@@ -30,7 +30,7 @@
                         {% if active_ticket %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'points:open_close_ticket' active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
+                                    <a href="{% url 'points:open_close_ticket' space.slug active_ticket.id %}" class="btn btn-sm btn-primary mt-2">
                                         {% if active_ticket.closed %}Open{% else %}Close{% endif %} active ticket
                                     </a>
                                 </td>

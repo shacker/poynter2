@@ -39,12 +39,12 @@ def activate_ticket(request, space_name: str, ticket_id: int):
         ticket.closed = False
 
     ticket.save()
-    refresh_widgets(request, space_name)
+    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_ticket_table"])
 
     return HttpResponse(status=204)
 
 
-def open_close_ticket(request, ticket_id: int):
+def open_close_ticket(request, space_name: str, ticket_id: int):
     "Allow moderator to open or close a ticket in a space. Simple toggle."
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
@@ -55,7 +55,7 @@ def open_close_ticket(request, ticket_id: int):
         ticket.active = False
 
     ticket.save()
-    refresh_widgets(request, ticket.space.slug)
+    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_ticket_table"])
 
     return HttpResponse(status=204)
 
@@ -74,7 +74,8 @@ def open_close_space(request, space_name: str):
         votes_data = get_votes_for_space(space_name)
         Snapshot.objects.create(space=space, snapshot=votes_data)
 
-    refresh_widgets(request, space_name)
+    # need to do more here?
+    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_voting_row"])
 
     return HttpResponse(status=204)
 
@@ -88,7 +89,8 @@ def join_leave_space(request, space_name: str):
     else:
         space.members.add(request.user)
 
-    refresh_widgets(request, space_name)
+    # need to do more here?
+    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_voting_row"])
 
     return HttpResponse(status=204)
 
@@ -153,18 +155,30 @@ def tally_single(request):
     return HttpResponse(status=204)  # Do nothing
 
 
-def refresh_widgets(request, space_name: str):
-    """When moderator activates or opens/closes a ticket,
-    the redraw must affect multiple widgets, in a mix of broadcast and unicast.
+def refresh_unicast_widgets(space_name: str, element_names: list = []):
+    """
+    Unicast approach to telling widgets to update themselves. i.e. this does
+    NOT send precomputed HTML to the clients - it just tells them to refresh
+    their contents via their own user.
 
-    Call the broadcast widgets in prescribed order, then issue a single refresh
-    request to all unicast widgets.
+    Called after operations require some widgets to be redrawn.
+    `element_names` is a list of those element names e.g.
+    refresh_unicast_widget("shacker_cosmos", ["update_voting_row","display_members"])
+    """
 
-    Note that target elements have names that match the functions that control them,
-    i.e.  <div id="display_ticket_table"> is refreshed by `views.display_ticket_table()`
+    channel_layer = get_channel_layer()
+    channel_name = f"broadcast_{space_name}"
 
-    TODO: We currently update all widgets when any of them change. Optimize by
-    having this function only update a list of requested widgets - all won't scale.
+    for elem in element_names:
+        async_to_sync(channel_layer.group_send)(
+            channel_name, {"type": "unicast_refresh", "target_id": elem}
+        )
+
+
+def refresh_widgets_deprecated(request, space_name: str):
+    """Similar to above, but push live, pre-computed HTML blocks to each client.
+    We have decided against this approach (or mixing them) so this is technically
+    unused, but leaving here for completeness.
     """
 
     channel_layer = get_channel_layer()
@@ -172,7 +186,6 @@ def refresh_widgets(request, space_name: str):
 
     update_elems = {
         "display_active_ticket": display_active_ticket,
-        # "display_ticket_table": display_ticket_table,
     }
 
     # Call updates in sequence
@@ -185,19 +198,4 @@ def refresh_widgets(request, space_name: str):
                 "html_content": html_content.content.decode("utf-8"),
                 "target_element": elem_name,
             },
-        )
-
-
-def refresh_unicast_widgets(space_name: str, element_names: list = []):
-    """Called after operations require some widgets to be redrawn.
-    element_names is a list of those element names e.g.
-    refresh_unicast_widget("shacker_cosmos", ["update_voting_row","display_members"])
-    """
-
-    channel_layer = get_channel_layer()
-    channel_name = f"broadcast_{space_name}"
-
-    for elem in element_names:
-        async_to_sync(channel_layer.group_send)(
-            channel_name, {"type": "unicast_refresh", "target_id": elem}
         )

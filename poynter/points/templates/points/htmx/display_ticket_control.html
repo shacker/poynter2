@@ -20,7 +20,7 @@
                           {{ ticket.id }}
                         </td>
                         <td>
-                            <a href="{% url 'points:open_close_ticket' ticket.id %}" >
+                            <a href="{% url 'points:open_close_ticket' space.slug ticket.id %}" >
                                 <i class="bi bi-app-indicator"></i>
                             </a>
                         </td>

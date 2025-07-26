@@ -47,7 +47,7 @@ urlpatterns = [
         name="activate_ticket",
     ),
     path(
-        "open_close_ticket/<int:ticket_id>",
+        "open_close_ticket/<str:space_name>/<int:ticket_id>",
         ops.open_close_ticket,
         name="open_close_ticket",
     ),

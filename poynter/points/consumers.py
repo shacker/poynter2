@@ -34,7 +34,8 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"message": message}))
 
     async def broadcast_html_update(self, event):
-        """Broadcast pre-rendered HTML to all users of the space."""
+        """Broadcast pre-rendered HTML to all users of the space.
+        Essentially deprecated but leaving in place in case useful."""
         html_content = event["html_content"]
         target_element = event["target_element"]
 
@@ -53,6 +54,7 @@ class BroadcastConsumer(AsyncWebsocketConsumer):
         """Single handler for all unicast refresh triggers.
         Event should contain 'target_id' to specify which element to refresh.
         """
+        # Send trigger-only update to WebSocket
         await self.send(
             text_data=json.dumps({"type": "unicast_refresh", "target_id": event["target_id"]})
         )

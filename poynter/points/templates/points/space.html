@@ -116,7 +116,11 @@
             // This data type catches HTML blocks to be registered for self-refresh,
             // so all requests can properly go through user.
             } else if (data.type === 'unicast_refresh') {
-                htmx.trigger(`#${data.target_id}`, 'refresh');
+                // Add small delay to ensure page is ready - delay is not ideal -
+                // explore other fixes for requesting user not seeing the change.
+                setTimeout(() => {
+                    htmx.trigger(`#${data.target_id}`, 'refresh');
+                }, 100);
             } else {
                 // Broadcast text message to all users, into a fixed div
                 var messageSpace = document.getElementById('message-display');
@@ -127,4 +131,3 @@
         };
     </script>
 {% endblock extra_js %}
-
