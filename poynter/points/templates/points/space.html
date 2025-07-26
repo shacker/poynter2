@@ -92,7 +92,13 @@
 
         {% if user == space.moderator %}
             <div class="row mt-4">
-                {% include "points/partial/moderator_tools.html" %}
+                {# show moderator tools to moderator only #}
+                <div
+                    hx-get="{% url 'points:display_moderator_tools' space.slug %}"
+                    hx-trigger="load, refresh"
+                    class="display_moderator_tools"
+                    id="display_moderator_tools">
+                </div>
             </div>
         {% endif %}
 

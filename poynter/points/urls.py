@@ -36,6 +36,11 @@ urlpatterns = [
         views_htmx.display_members,
         name="display_members",
     ),
+    path(
+        "display_moderator_tools/<str:space_name>",
+        views_htmx.display_moderator_tools,
+        name="display_moderator_tools",
+    ),
     # From OPS
     path("tally/single/", ops.tally_single, name="tally_single"),
     path("rt_send/", ops.rt_send_message, name="rt_send_message"),

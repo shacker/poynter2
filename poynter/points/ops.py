@@ -9,8 +9,6 @@ from django.shortcuts import get_object_or_404
 from poynter.points.models import Snapshot, Space, Ticket
 from poynter.points.views_htmx import (
     display_active_ticket,
-    display_members,
-    display_ticket_table,
     get_votes_for_space,
 )
 
@@ -70,12 +68,21 @@ def open_close_space(request, space_name: str):
     space.is_open = False if space.is_open else True
     space.save()
 
+    # Also set any active ticket to False
+    space.ticket_set.all().update(active=False)
+
     if not space.is_open:
         votes_data = get_votes_for_space(space_name)
         Snapshot.objects.create(space=space, snapshot=votes_data)
 
-    # need to do more here?
-    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_voting_row"])
+    widgets = [
+        "display_active_ticket",
+        "display_voting_row",
+        "display_moderator_tools",
+        "display_active_ticket",
+        "display_ticket_table",
+    ]
+    refresh_unicast_widgets(space_name, widgets)
 
     return HttpResponse(status=204)
 

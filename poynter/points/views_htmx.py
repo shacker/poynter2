@@ -32,10 +32,7 @@ def display_ticket_control(request, space_name: str):
 
 
 def display_active_ticket(request, space_name: str):
-    """HTMX view displays linked ticket currently being voted on.
-    Dynamic since it needs to be updated independently when
-    moderator changes what's active on the board.
-    """
+    """HTMX view displays linked ticket currently being voted on."""
 
     space = get_object_or_404(Space, slug=space_name)
     try:
@@ -65,6 +62,22 @@ def display_voting_row(request, space_name: str):
         request,
         "points/htmx/display_voting_row.html",
         {"active_ticket": active_ticket, "space": space, "numbers": numbers},
+    )
+
+
+def display_moderator_tools(request, space_name: str):
+    """HTMX view displays various controls to the moderator,
+    which must be sensitive to the current state.
+    """
+
+    space = get_object_or_404(Space, slug=space_name)
+
+    return render(
+        request,
+        "points/htmx/display_moderator_tools.html",
+        {
+            "space": space,
+        },
     )
 
 
