@@ -6,11 +6,18 @@
         </div>
         <div class="card-body">
             <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                </tr>
                 {% for ticket in current_tickets %}
                     <tr>
                         <td>
+                            {{ ticket.id }}
+                        </td>
+                        <td>
                             <a href="{{ ticket.url }}" target="_blank">
-                                {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket }}{% endif %}
+                                {% if ticket.closed %}<strike>{{ ticket }}</strike>{% else %}{{ ticket.title }}{% endif %}
                             </a>
                         </td>
                     </tr>

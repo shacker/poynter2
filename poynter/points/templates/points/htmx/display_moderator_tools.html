@@ -69,24 +69,6 @@
                             </td>
                         </tr>
 
-                        {# Boot users #}
-                        <form action="{% url 'points:boot_users' space.slug %}" method="get">
-                            <tr>
-                                <td>
-                                    <input class="btn btn-sm btn-primary mb-2" type="submit" value="Boot selected users"/>
-                                </td>
-                                <td>
-                                    {% if space.members.all %}
-                                        {% for username in space.members.all %}
-                                            <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
-                                        {% endfor %}
-                                    {% else %}
-                                        No members have joined
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        </form>
-
                         {# Archive current tickets #}
                         <tr>
                             <td>
@@ -99,27 +81,45 @@
                             </td>
                         </tr>
 
+                        {# Boot users . n.b. forms cannot span table rows! #}
+                        <tr>
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <form action="{% url 'points:boot_users' space.slug %}" method="get">
+                                    {% for username in space.members.all %}
+                                        <input type="checkbox" name="usernames" value="{{ username }}"> {{ username }} &nbsp;
+                                    {% endfor %}
+                                    <br />
+                                    <input class="btn btn-sm btn-primary mb-2 mt-2" type="submit" value="Boot selected users"/>
+                                </form>
+                            </td>
+                        </tr>
+
                         {# Send message to all users #}
-                        <form hx-post="{% url 'points:rt_send_message' %}"
-                            hx-swap="none"
-                            hx-on::after-request="this.reset()"
-                        >
-                            {% csrf_token %}
-                            <tr>
-                                <td>
-                                    <button type="submit" class="btn btn-sm btn-primary">Message All Users</button>
-                                </td>
-                                <td>
-                                    <input type="hidden" name="space_name" value="{{ space.slug }}">
-                                    <textarea class="form-control"
-                                        id="message"
-                                        name="message"
-                                        rows="3"
-                                        placeholder="Message all users..."
-                                        required></textarea>
-                                </td>
-                            </tr>
-                        </form>
+                        <tr>
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <form hx-post="{% url 'points:rt_send_message' %}"
+                                    hx-swap="none"
+                                    hx-on::after-request="this.reset()"
+                                >
+                                {% csrf_token %}
+                                <input type="hidden" name="space_name" value="{{ space.slug }}">
+                                <textarea class="form-control"
+                                    id="message"
+                                    name="message"
+                                    rows="3"
+                                    placeholder="Message all users..."
+                                    required></textarea>
+                                    <button type="submit" class="btn btn-sm btn-primary mt-2">Message All Users</button>
+                                </form>
+                            </td>
+                        </tr>
+
                 </table>
             </div>
         </div>

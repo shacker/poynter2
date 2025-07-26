@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
@@ -45,18 +44,6 @@ def archive_tickets(request, space_name: str):
     space = get_object_or_404(Space, slug=space_name)
     tickets = Ticket.objects.filter(space=space, archived=False)
     tickets.update(archived=True, active=False)
-
-    return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
-
-
-def boot_users(request, space_name: str):
-    "Allow moderator to remove users from a space."
-
-    space = get_object_or_404(Space, slug=space_name)
-    usernames = request.GET.getlist("usernames")
-    for username in usernames:
-        user = User.objects.get(username=username)
-        space.members.remove(user)
 
     return redirect(reverse("points:space", kwargs={"space_name": space.slug}))
 

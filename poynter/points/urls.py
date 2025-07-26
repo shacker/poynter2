@@ -7,7 +7,6 @@ app_name = "points"
 urlpatterns = [
     path("add_ticket/<str:space_name>", views.add_ticket, name="add_ticket"),
     path("archive_tickets/<str:space_name>", views.archive_tickets, name="archive_tickets"),
-    path("boot_users/<str:space_name>", views.boot_users, name="boot_users"),
     path("clear_space_cache/<str:space_name>", views.clear_space_cache, name="clear_space_cache"),
     path("space/<str:space_name>", views.space, name="space"),
     # HTMX views
@@ -51,4 +50,5 @@ urlpatterns = [
         ops.open_close_ticket,
         name="open_close_ticket",
     ),
+    path("boot_users/<str:space_name>", ops.boot_users, name="boot_users"),
 ]

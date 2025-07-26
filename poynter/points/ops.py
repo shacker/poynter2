@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -96,6 +97,19 @@ def join_leave_space(request, space_name: str):
     # need to do more here?
     refresh_unicast_widgets(space_name, ["display_voting_row"])
 
+    return HttpResponse(status=204)
+
+
+def boot_users(request, space_name: str):
+    "Allow moderator to remove users from a space."
+
+    space = get_object_or_404(Space, slug=space_name)
+    usernames = request.GET.getlist("usernames")
+    for username in usernames:
+        user = User.objects.get(username=username)
+        space.members.remove(user)
+
+    refresh_unicast_widgets(space_name, ["display_moderator_tools", "display_members"])
     return HttpResponse(status=204)
 
 

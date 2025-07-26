@@ -29,6 +29,7 @@ ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 
 DJANGO_APPS = [
+    "channels",
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,7 +50,6 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     "django_webserver",
     "jsoneditor",
-    "channels",
 ]
 
 LOCAL_APPS = [
