@@ -1,4 +1,6 @@
-{% if active_ticket and space.is_open %}
+{% if active_ticket  and space.is_open %}
+
+    <h4>Voting on:<br /><a href="{{ active_ticket.url }}" target="_blank">{{ active_ticket.title }}</a></h3>
 
     {% if user in space.members.all %}
         <form action="{% url 'points:tally_single' %}" method="post" class="mt-4" id="vote_numbers">

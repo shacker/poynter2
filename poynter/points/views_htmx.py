@@ -31,20 +31,6 @@ def display_ticket_control(request, space_name: str):
     return render(request, "points/htmx/display_ticket_control.html", ctx)
 
 
-def display_active_ticket(request, space_name: str):
-    """HTMX view displays linked ticket currently being voted on."""
-
-    space = get_object_or_404(Space, slug=space_name)
-    try:
-        active_ticket = space.ticket_set.get(active=True)
-    except Ticket.DoesNotExist:
-        active_ticket = None
-
-    return render(
-        request, "points/htmx/display_active_ticket.html", {"active_ticket": active_ticket}
-    )
-
-
 def display_voting_row(request, space_name: str):
     """HTMX view displays voting buttons to voting members
     when space is open and an active ticket exists.

@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 
 from poynter.points.models import Snapshot, Space, Ticket
 from poynter.points.views_htmx import (
-    display_active_ticket,
     get_votes_for_space,
 )
 
@@ -37,7 +36,7 @@ def activate_ticket(request, space_name: str, ticket_id: int):
         ticket.closed = False
 
     ticket.save()
-    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_ticket_table"])
+    refresh_unicast_widgets(space_name, ["display_voting_row", "display_ticket_table"])
 
     return HttpResponse(status=204)
 
@@ -48,12 +47,12 @@ def open_close_ticket(request, space_name: str, ticket_id: int):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket.closed = not ticket.closed
 
-    # Prevent logical impossibility:
+    # Prevent logical impossibility (but is this confusing?)
     if ticket.closed:
         ticket.active = False
 
     ticket.save()
-    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_ticket_table"])
+    refresh_unicast_widgets(space_name, ["display_voting_row", "display_ticket_table"])
 
     return HttpResponse(status=204)
 
@@ -68,18 +67,16 @@ def open_close_space(request, space_name: str):
     space.is_open = False if space.is_open else True
     space.save()
 
-    # Also set any active ticket to False
-    space.ticket_set.all().update(active=False)
+    # # Also set any active ticket to False
+    # space.ticket_set.all().update(active=False)
 
     if not space.is_open:
         votes_data = get_votes_for_space(space_name)
         Snapshot.objects.create(space=space, snapshot=votes_data)
 
     widgets = [
-        "display_active_ticket",
         "display_voting_row",
         "display_moderator_tools",
-        "display_active_ticket",
         "display_ticket_table",
     ]
     refresh_unicast_widgets(space_name, widgets)
@@ -97,7 +94,7 @@ def join_leave_space(request, space_name: str):
         space.members.add(request.user)
 
     # need to do more here?
-    refresh_unicast_widgets(space_name, ["display_active_ticket", "display_voting_row"])
+    refresh_unicast_widgets(space_name, ["display_voting_row"])
 
     return HttpResponse(status=204)
 
@@ -179,30 +176,4 @@ def refresh_unicast_widgets(space_name: str, element_names: list = []):
     for elem in element_names:
         async_to_sync(channel_layer.group_send)(
             channel_name, {"type": "unicast_refresh", "target_id": elem}
-        )
-
-
-def refresh_widgets_deprecated(request, space_name: str):
-    """Similar to above, but push live, pre-computed HTML blocks to each client.
-    We have decided against this approach (or mixing them) so this is technically
-    unused, but leaving here for completeness.
-    """
-
-    channel_layer = get_channel_layer()
-    channel_name = f"broadcast_{space_name}"
-
-    update_elems = {
-        "display_active_ticket": display_active_ticket,
-    }
-
-    # Call updates in sequence
-    for elem_name, handler in update_elems.items():
-        html_content = handler(request, space_name)
-        async_to_sync(channel_layer.group_send)(
-            channel_name,
-            {
-                "type": "broadcast_html_update",
-                "html_content": html_content.content.decode("utf-8"),
-                "target_element": elem_name,
-            },
         )

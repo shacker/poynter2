@@ -130,4 +130,4 @@ Show two kinds of functions in htmx_views.py - views for partials, and helper op
 
 Future: Demo updating just one widget, not all of them
 
-The http 204 widgets are "views" (should be ops) such as open_close_ticket or open_close_space or join_leave_space that do not represent a specific on-screen widget but affect the contents of one or more other widgets.
+The http 204 widgets are "views" (should be ops) such as open_close_ticket or open_close_space or join_leave_space that do not represent a specific on-screen widget but are actions that affect the contents of one or more other widgets.

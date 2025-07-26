@@ -36,15 +36,7 @@
 
                 <div class="row">
                     <div class="col">
-                        {# Display active ticket, linked #}
-                        <div
-                            hx-get="{% url 'points:display_active_ticket' space.slug %}"
-                            hx-trigger="load, refresh"
-                            class="display_active_ticket"
-                            id="display_active_ticket">
-                        </div>
-
-                        {# Display voting row. Refresh via unicast since internal names are different for each person. #}
+                        {# Display voting row with active ticket.  #}
                         <div
                             hx-get="{% url 'points:display_voting_row' space.slug %}"
                             hx-trigger="load, refresh"

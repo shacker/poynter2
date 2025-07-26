@@ -22,11 +22,6 @@ urlpatterns = [
         name="display_ticket_control",
     ),
     path(
-        "display_active_ticket/<str:space_name>",
-        views_htmx.display_active_ticket,
-        name="display_active_ticket",
-    ),
-    path(
         "display_voting_row/<str:space_name>",
         views_htmx.display_voting_row,
         name="display_voting_row",
