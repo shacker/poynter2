@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from poynter.points.forms import AddTicketForm
 from poynter.points.models import Project, Space, Ticket
-from poynter.points.ops import refresh_unicast_widgets
+from poynter.points.ops import refresh_widgets
 
 
 def home(request):
@@ -68,7 +68,7 @@ def add_ticket(request, space_name: str):
             ticket.save()
 
             # Update everyone else's display
-            refresh_unicast_widgets(space_name, ["display_ticket_table"])
+            refresh_widgets(space_name, ["display_ticket_table"])
 
             return redirect(reverse("points:space", kwargs={"space_name": space_name}))
 

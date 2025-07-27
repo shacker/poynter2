@@ -1,9 +1,7 @@
-from collections import defaultdict
-
-from django.core.cache import cache
 from django.shortcuts import get_object_or_404, render
 
 from poynter.points.models import Space, Ticket
+from poynter.points.ops import get_votes_for_space
 
 """ These are HTMX "partial views" that just render HTML for one portion of a view.
 These are triggered for re/generation on page load or when calling ops.refresh_widgets().
@@ -69,7 +67,7 @@ def display_moderator_tools(request, space_name: str):
 
 def display_members(request, space_name: str):
     """HTMX view displays list of currently active space members
-    (and their votes to participants). tallies are stored in redis_cache
+    (and their votes, once voting is closed). Tallies are stored in cache
     until voting is closed, then copied to Snapshot.
     """
 
@@ -84,20 +82,16 @@ def display_members(request, space_name: str):
     # {"joe": 13, "erin": 5}
     tallies = get_votes_for_space(space_name)
     members = {}
-    num_voted = 0
     if active_ticket:
         for member in space.members.all():
             member_vote = None
             if member.username in tallies.get(active_ticket.id, {}).keys():
                 member_vote = tallies[active_ticket.id][member.username]
-                num_voted += 1
             members[member] = member_vote
     else:
         # Still need to show members list when no active ticket
         for member in space.members.all():
             members[member] = None
-
-    all_voted = num_voted == space.members.count()
 
     return render(
         request,
@@ -106,49 +100,5 @@ def display_members(request, space_name: str):
             "active_ticket": active_ticket,
             "space": space,
             "members": members,
-            "all_voted": all_voted,
         },
     )
-
-
-def get_votes_for_space(space_name: str) -> dict:
-    """
-    Get all votes for current workspace with computed averages appended.
-    Average may not fit an existing Fibonacci number - up to moderator
-    to assign final average from returned value. Ticket db IDs are keys in
-    this dict.
-
-    # TODO: MOve to ops?
-
-    {
-        8: {
-            "rob": 3,
-            "joe": 2,
-        },
-        17: {
-            "rob": 8,
-            "erin": 3,
-        }
-    }
-
-    append averages as a final dict:
-    {
-        "averages": {
-            8: 2.5,
-            17: 5.5
-        }
-    }
-
-    """
-
-    avgs = {}
-    data = cache.get(space_name, defaultdict(dict))
-    for key in data.keys():
-        vals = data[key].values()
-        avg = sum(vals) / len(vals)
-        avgs[key] = avg
-
-    data["averages"] = avgs
-
-    # default_dict is unhashable - cast back
-    return dict(data)

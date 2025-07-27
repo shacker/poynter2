@@ -1,11 +1,10 @@
 {% comment %}
     While voting is open, we show *who* has voted but not what the votes were.
-        - During voting, data comes from `get_votes_for_space()` which uses redis
-    When voting is closed and the snapshot saved, we pull from the snapshot votes instead (postgres).
+    When moderator closes the ticket, votes are displayed to all.
 {% endcomment %}
-{{space.members.all}}
+
 <a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-sm btn-primary mb-2">
-    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
+    {% if user in space.members %}Leave{% else %}Join{% endif %}
 </a>
 
 <div class="card mt-2" style="width: 18rem;">
@@ -13,14 +12,15 @@
         <li class="list-group-item"><b>Voting members</b></li>
         {% for member, vote in members.items  %}
             <li class="list-group-item">
-                {% if user == space.moderator or active_ticket.closed %}
-                    {{ member }}{% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
-                {% else %}
                     {{ member }}
-                    {% if active_ticket.closed or user == member %}
-                        {% if vote %}: {{ vote|default_if_none:"" }}{% endif %}
+                    {% if vote %}:
+                        {% if active_ticket.closed %}
+                            {{ vote }}
+                        {% else %}
+                            <i class="bi bi-check" style="font-size: 130%";></i>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+
             </li>
         {% endfor %}
     </ul>

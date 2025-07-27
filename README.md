@@ -76,7 +76,7 @@ What we can't do: A channel update is sent but each recipient gets different con
 Because we also set up a helper function to simplify the call, all you have to do for a dynamically refreshing widget is:
 - When you put the div (e.g. `display_ticket_table`) into the HTML, be sure it gets these htmx directives: `hx-trigger="load, refresh"`
 - In the view or operation that does an update, specify the widget-divs that need refreshing, e.g:
-     `refresh_unicast_widgets(space_name, ["display_ticket_table", "display_voting_row"])`
+     `refresh_widgets(space_name, ["display_ticket_table", "display_voting_row"])`
 
 ### Ticket Control Panel
 

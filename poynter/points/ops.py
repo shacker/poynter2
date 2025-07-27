@@ -8,9 +8,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from poynter.points.models import Snapshot, Space, Ticket
-from poynter.points.views_htmx import (
-    get_votes_for_space,
-)
 
 """
 - Helper functions that don't render a partial, but execute some logic and then
@@ -37,23 +34,27 @@ def activate_ticket(request, space_name: str, ticket_id: int):
         ticket.closed = False
 
     ticket.save()
-    refresh_unicast_widgets(space_name, ["display_voting_row", "display_ticket_table"])
+    refresh_widgets(space_name, ["display_voting_row", "display_ticket_table"])
 
     return HttpResponse(status=204)
 
 
 def open_close_ticket(request, space_name: str, ticket_id: int):
-    "Allow moderator to open or close a ticket in a space. Simple toggle."
-
+    """Allow moderator to open or close a ticket in a space. Simple toggle.
+    Note we do NOT set ticket to inactive when it's closed, as that would
+    prevent viewing the results of the vote just held, since we can only
+    show votes for a ticket that is both active and closed.
+    """
+    space = get_object_or_404(Space, slug=space_name)
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket.closed = not ticket.closed
-
-    # Prevent logical impossibility (but is this confusing?)
-    if ticket.closed:
-        ticket.active = False
-
     ticket.save()
-    refresh_unicast_widgets(space_name, ["display_voting_row", "display_ticket_table"])
+
+    # Update snapshot incrementally as tickets are closed
+    votes_data = get_votes_for_space(space_name)
+    Snapshot.objects.create(space=space, snapshot=votes_data)
+
+    refresh_widgets(space_name, ["display_voting_row", "display_ticket_table", "display_members"])
 
     return HttpResponse(status=204)
 
@@ -80,7 +81,7 @@ def open_close_space(request, space_name: str):
         "display_moderator_tools",
         "display_ticket_table",
     ]
-    refresh_unicast_widgets(space_name, widgets)
+    refresh_widgets(space_name, widgets)
 
     return HttpResponse(status=204)
 
@@ -94,8 +95,7 @@ def join_leave_space(request, space_name: str):
     else:
         space.members.add(request.user)
 
-    # need to do more here?
-    refresh_unicast_widgets(space_name, ["display_voting_row"])
+    refresh_widgets(space_name, ["display_voting_row", "display_members"])
 
     return HttpResponse(status=204)
 
@@ -109,7 +109,7 @@ def boot_users(request, space_name: str):
         user = User.objects.get(username=username)
         space.members.remove(user)
 
-    refresh_unicast_widgets(space_name, ["display_moderator_tools", "display_members"])
+    refresh_widgets(space_name, ["display_moderator_tools", "display_members"])
     return HttpResponse(status=204)
 
 
@@ -167,13 +167,54 @@ def tally_single(request):
         data[ticket][username] = choice
         cache.set(space_name, data, 3600)
 
-    # After vote is logged, tell all clients to update their displays
-    refresh_unicast_widgets(space_name, ["display_members"])
+    # After vote is entered, tell all clients to update their displays
+    refresh_widgets(space_name, ["display_members"])
 
     return HttpResponse(status=204)  # Do nothing
 
 
-def refresh_unicast_widgets(space_name: str, element_names: list = []):
+def get_votes_for_space(space_name: str) -> dict:
+    """
+    Get all votes for current workspace with computed averages appended.
+    Average may not fit an existing Fibonacci number - up to moderator
+    to assign final average from returned value. Ticket db IDs are keys in
+    this dict.
+
+    {
+        8: {
+            "rob": 3,
+            "joe": 2,
+        },
+        17: {
+            "rob": 8,
+            "erin": 3,
+        }
+    }
+
+    append averages as a final dict:
+    {
+        "averages": {
+            8: 2.5,
+            17: 5.5
+        }
+    }
+
+    """
+
+    avgs = {}
+    data = cache.get(space_name, defaultdict(dict))
+    for key in data.keys():
+        vals = data[key].values()
+        avg = sum(vals) / len(vals)
+        avgs[key] = avg
+
+    data["averages"] = avgs
+
+    # default_dict is unhashable - cast back
+    return dict(data)
+
+
+def refresh_widgets(space_name: str, element_names: list = []):
     """
     Unicast approach to telling widgets to update themselves. i.e. this does
     NOT send precomputed HTML to the clients - it just tells them to refresh
