@@ -4,7 +4,7 @@
 {% endcomment %}
 
 <a href="{% url 'points:join_leave_space' space.slug %}" class="btn btn-sm btn-primary mb-2">
-    {% if user in space.members %}Leave{% else %}Join{% endif %}
+    {% if user in space.members.all %}Leave{% else %}Join{% endif %}
 </a>
 
 <div class="card mt-2" style="width: 18rem;">

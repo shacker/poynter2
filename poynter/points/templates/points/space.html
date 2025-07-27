@@ -101,31 +101,63 @@
 
 {% block extra_js %}
     <script>
-        // Populate any page element with any widget contents generated via HTMX
-        const socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ space.slug }}');
-        socket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            // This data type catches HTML blocks to be force-updated for everyone
-            if (data.type === 'html_update') {
-                const targetElement = document.getElementById(data.target_element);
-                if (targetElement) {
-                    targetElement.innerHTML = data.html_content;
+        // Create and maintain a new socket to display HTMX widget changes in real time
+        let socket;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        function connectWebSocket() {
+            socket = new WebSocket('ws://{{ host }}/ws/broadcast/{{ space.slug }}');
+
+            socket.onopen = function(event) {
+                console.log('WebSocket connected');
+                reconnectAttempts = 0; // Reset on successful connection
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'unicast_refresh') {
+                    // Primary mechansim for widget update currently in use
+                    // Add small delay to ensure page is ready - delay is not ideal -
+                    // explore other fixes for requesting user not seeing the change.
+                    setTimeout(() => {
+                        htmx.trigger(`#${data.target_id}`, 'refresh');
+                    }, 100);
                 }
-            // This data type catches HTML blocks to be registered for self-refresh,
-            // so all requests can properly go through user.
-            } else if (data.type === 'unicast_refresh') {
-                // Add small delay to ensure page is ready - delay is not ideal -
-                // explore other fixes for requesting user not seeing the change.
-                setTimeout(() => {
-                    htmx.trigger(`#${data.target_id}`, 'refresh');
-                }, 100);
-            } else {
-                // Broadcast text message to all users, into a fixed div
-                var messageSpace = document.getElementById('message-display');
-                messageSpace.textContent = data.message;
-                messageSpace.classList.add('alert');
-                messageSpace.classList.add('alert-primary');
-            }
-        };
+                else if (data.type === 'html_update') {
+                    // This data.type catches HTML blocks to be force-updated for everyone.
+                    // Not currently in use
+                    const targetElement = document.getElementById(data.target_element);
+                    if (targetElement) {
+                        targetElement.innerHTML = data.html_content;
+                    }
+                } else {
+                    // Broadcast text message to all users, into a fixed div
+                    var messageSpace = document.getElementById('message-display');
+                    messageSpace.textContent = data.message;
+                    messageSpace.classList.add('alert');
+                    messageSpace.classList.add('alert-primary');
+                }
+            };
+
+            socket.onclose = function(event) {
+                // Detect and handle websocket disconnections ie. server restarts
+                console.log('WebSocket disconnected');
+                // Attempt to reconnect
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    console.log(`Reconnection attempt ${reconnectAttempts}`);
+                    setTimeout(connectWebSocket, 2000 * reconnectAttempts); // Exponential backoff
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.log('WebSocket error:', error);
+                socket.close();
+            };
+        }
+
+        // Initial connection
+        connectWebSocket();
     </script>
 {% endblock extra_js %}

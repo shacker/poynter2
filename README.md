@@ -1,4 +1,10 @@
+
 # WRITE THIs
+
+This is an implementation using:
+- HTMX for dynamic widget control
+- Django Channels for "broadcast" technology - updating all participating displays in lockstep
+- WebSockets to implement communication with channels
 
 There is ONE active ticket at a time.
 Until all have been voted on , then there are none
@@ -135,3 +141,6 @@ The http 204 widgets are "views" (should be ops) such as open_close_ticket or op
 Using Daphne. To start:
 `daphne poynter.config.asgi:application`
 but because Daphne has built-in runserver compatibilty which we've configured [like this](https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/daphne/#integration-with-runserver), you can also start the app with the usual `./manage.py runserver` . The console should report `Starting ASGI/Daphne version...`.
+Note that running via runserver has the advantage of automatic restarts when code changes - if you use the Daphne command, you must restart manually with every change.
+
+Demo Websocket disconnected and reconnection code
