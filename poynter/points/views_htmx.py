@@ -55,12 +55,17 @@ def display_moderator_tools(request, space_name: str):
     """
 
     space = get_object_or_404(Space, slug=space_name)
+    try:
+        active_ticket = space.ticket_set.get(active=True)
+    except Ticket.DoesNotExist:
+        active_ticket = None
 
     return render(
         request,
         "points/htmx/display_moderator_tools.html",
         {
             "space": space,
+            "active_ticket": active_ticket,
         },
     )
 
